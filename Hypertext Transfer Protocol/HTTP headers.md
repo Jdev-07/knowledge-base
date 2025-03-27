@@ -1,1 +1,0 @@
-HTTP headers let the client and the server pass additional information with a message in a request or response 
