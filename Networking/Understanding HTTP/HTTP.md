@@ -7,3 +7,7 @@ HTTP follows a classical client-server model with a client opening a request, th
 [[HTTP headers]]
 
 Message headers are used to send metadata about a resource or HTTP message, and to describe the behavior of the client or the server
+
+[[Cross-Origin Resources Sharing (CORS)]]
+
+Cross-site HTTP requests are requests for resources from different domain than that of the resource making the request. 
