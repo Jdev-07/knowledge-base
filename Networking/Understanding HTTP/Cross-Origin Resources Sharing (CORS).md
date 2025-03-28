@@ -71,3 +71,45 @@ Content-Type: text/plain
 [Some XML content]
 
 ```
+
+### The HTTP response headers
+
+#### Access-Control-Allow-Origin 
+
+```HTTP
+Access-Control-Allow-Origin: <origin> | *
+```
+
+This specifies either a single origin which tells browsers to allow that origin to access the resource.
+
+#### Access-Control-Expose-Headers
+
+This headers adds the specified headers to the allowlist that JS in browsers is allowed to access.
+
+```HTTP
+Access-Control-Expose-Headers: X-My-Custom-Header, X-Another-Custom-Header
+```
+
+#### Access-Control-Max-Age
+
+This header indicates how longs the results of a preflight request can be cached.
+#### Access-Control-Allow-Credentials
+#### Access-Control-Allow-Methods
+
+this header specifies the method or methods allows when accessing the resource. 
+#### Access-Control-Allow-Headers 
+
+This header is used in response to a preflight request to indicate which HTTP headers can be used when making the actual request
+
+### The HTTP request headers
+
+#### Origin
+
+This header indicates the origin of the cross-origin access request or preflight request
+#### Access-Control-Request-Method
+
+This header is used when issuing a preflight request to let the server know what HTTP headers will be used when the actual request is made.
+
+#### Access-Control-Request-Header
+
+This header is used when issuing a preflight request to let the server know what HTTP headers will be used when the actual request is made

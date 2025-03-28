@@ -11,3 +11,5 @@ Message headers are used to send metadata about a resource or HTTP message, and 
 [[Cross-Origin Resources Sharing (CORS)]]
 
 Cross-site HTTP requests are requests for resources from different domain than that of the resource making the request. 
+
+[[HTTP request method]]
