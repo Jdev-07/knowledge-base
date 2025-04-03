@@ -38,6 +38,40 @@ TRACE: The message body contains the request as received by the server.
 
 The request succeeded, and a new resource was created as a result. This is typically the response sent after [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/POST) requests, or some [`PUT`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/PUT) requests.
 
+Receiving a response indicating user creation
+```HTTP
+POST /users HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{
+  "firstName": "Brian",
+  "lastName": "Smith",
+  "email": "brian.smith@example.com"
+}
+```
+
+After a successful user creatin, the 201 Created response will look like this:
+```HTTP
+POST /users HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{
+  "firstName": "Brian",
+  "lastName": "Smith",
+  "email": "brian.smith@example.com"
+}
+```
+
 * 202 Accepted 
 
-The request has been received but not yet acted upon. It is noncommittal, since there is no way in HTTP to later send an asynchronous response indicating the outcome of the request. It is intended for cases where another process or server handles the request, or for batch processing.
+The request has been received but processing has not been completed or may not have started. It is noncommittal, since there is no way in HTTP to later send an asynchronous response indicating the outcome of the request. It is intended for cases where another process or server handles the request, or for batch processing.
+
+* 203 Non-Authoritative Information 
+
+his response code means the returned metadata is not exactly the same as is available from the origin server, but is collected from a local or a third-party copy. This is mostly used for mirrors or backups of another resource. Except for that specific case, the [`200 OK`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/200) response is preferred to this status.
+
+* 204 No Content
+
+There is no content to send for this request, but the headers are useful. The user agent may update its cached headers for this resource with the new ones.
