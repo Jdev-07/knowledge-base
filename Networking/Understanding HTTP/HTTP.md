@@ -8,8 +8,14 @@ HTTP follows a classical client-server model with a client opening a request, th
 
 Message headers are used to send metadata about a resource or HTTP message, and to describe the behavior of the client or the server
 
-[[Cross-Origin Resources Sharing (CORS)]]
+[[HTTP Cross-Origin Resources Sharing (CORS)]]
 
 Cross-site HTTP requests are requests for resources from different domain than that of the resource making the request. 
 
 [[HTTP request method]]
+
+
+[[HTTP response status code]]
+
+Response status codes indicate the outcome of a specific HTTP request. Response are grouped in five classes: informational, successful, redirections, client errors, and server errors.
+
