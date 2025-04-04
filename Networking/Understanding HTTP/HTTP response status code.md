@@ -317,6 +317,42 @@ This is similar to `401 Unauthorized` but authentication is needed to be done 
 
 This response is sent on an idle connection by some servers, even without any previous request by the client. It means that the server would like to shut down this unused connection. This response is used much more since some browsers use HTTP pre-connection mechanisms to speed up browsing. Some servers may shut down a connection without sending this message.
 
+Example of Timeout in form submission
+
+```HTTP
+POST /upload HTTP/1.1
+Host: example.com
+Content-Type: multipart/form-data; boundary=----Boundary1234
+Content-Length: 4012345
+
+------Boundary1234
+Content-Disposition: form-data; name="file"; filename="myImage.jpg"
+Content-Type: image/jpeg
+
+\xFF\xD8\xFF\xE0\x00...(binary data)
+------Boundary1234--
+
+```
+
+If the data is not received in full due to network issues or latency, the server may timeout the connection. Clients may repeat the request again, and a a new connection will be used.
+
+Response:
+
+```HTTP
+HTTP/1.1 408 Request Timeout
+Content-Type: text/html
+
+<html>
+<head>
+    <title>408 Request Timeout</title>
+</head>
+<body>
+    <h1>408 Request Timeout</h1>
+    <p>Failed to process request in time. Please try again.</p>
+</body>
+</html> 
+```
+
 [`409 Conflict`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409)
 
 This response is sent when a request conflicts with the current state of the server. In [WebDAV](https://developer.mozilla.org/en-US/docs/Glossary/WebDAV) remote web authoring, `409` responses are errors sent to the client so that a user might be able to resolve a conflict and resubmit the request.
@@ -396,3 +432,58 @@ The server is unwilling to process the request because its header fields are too
 [`451 Unavailable For Legal Reasons`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/451)
 
 The user agent requested a resource that cannot legally be provided, such as a web page censored by a government.
+
+## Server Error Responses
+
+[`500 Internal Server Error`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/500)
+
+The server has encountered a situation it does not know how to handle. This error is generic, indicating that the server cannot find a more appropriate `5XX` status code to respond with.
+
+The HTTP **`500 Internal Server Error`** [server error response](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#server_error_responses) status code indicates that the server encountered an unexpected condition that prevented it from fulfilling the request. This error is a generic "catch-all" response to server issues, indicating that the server cannot find a more appropriate [5XX error](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#server_error_responses) to respond with.
+
+If you're a visitor seeing `500` errors on a web page, these issues require investigation by server owners or administrators. There are many possible causes of `500` errors, including: improper server configuration, out-of-memory (OOM) issues, unhandled exceptions, improper file permissions, or other complex factors. Server administrators may proactively log occurrences of server error responses, like the `500` status code, with details about the initiating requests to improve the stability of a service in the future.
+
+[`501 Not Implemented`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/501)
+
+The request method is not supported by the server and cannot be handled. The only methods that servers are required to support (and therefore that must not return this code) are [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/GET) and [`HEAD`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/HEAD)
+A response with this status may also include a [`Retry-After`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After) header, telling the client that they can retry the request after the specified time has elapsed. A `501` response is cacheable by default unless caching headers instruct otherwise.
+
+[`502 Bad Gateway`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/502)
+
+This error response means that the server, while working as a gateway to get a response needed to handle the request, got an invalid response.
+
+This response is similar to a [`500 Internal Server Error`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/500) response in the sense that it is a generic "catch-call" for server errors. The difference is that it is specific to the point in the request chain that the error has occurred. If the origin server sends a valid HTTP error response to the gateway, the response should be passed on to the client instead of a `502` to make the failure reason transparent. If the proxy or gateway did not receive any HTTP response from the origin, it instead sends a [`504 Gateway Timeout`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/504) to the client.
+
+[`503 Service Unavailable`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/503)
+
+The server is not ready to handle the request. Common causes are a server that is down for maintenance or that is overloaded. Note that together with this response, a user-friendly page explaining the problem should be sent. This response should be used for temporary conditions and the [`Retry-After`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After) HTTP header should, if possible, contain the estimated time before the recovery of the service. The webmaster must also take care about the caching-related headers that are sent along with this response, as these temporary condition responses should usually not be cached.
+
+[`504 Gateway Timeout`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/504)
+
+This error response is given when the server is acting as a gateway and cannot get a response in time.
+
+[`505 HTTP Version Not Supported`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/505)
+
+The HTTP version used in the request is not supported by the server.
+
+[`506 Variant Also Negotiates`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/506)
+
+The server has an internal configuration error: during content negotiation, the chosen variant is configured to engage in content negotiation itself, which results in circular references when creating responses.
+
+A server sends a `506` status code due to server misconfiguration that results in circular references when creating responses.
+
+[`507 Insufficient Storage`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/507) ([WebDAV](https://developer.mozilla.org/en-US/docs/Glossary/WebDAV))
+
+The method could not be performed on the resource because the server is unable to store the representation needed to successfully complete the request.
+
+[`508 Loop Detected`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/508) ([WebDAV](https://developer.mozilla.org/en-US/docs/Glossary/WebDAV))
+
+The server detected an infinite loop while processing the request.
+
+[`510 Not Extended`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/510)
+
+The client request declares an HTTP Extension ([RFC 2774](https://datatracker.ietf.org/doc/html/rfc2774)) that should be used to process the request, but the extension is not supported.
+
+[`511 Network Authentication Required`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/511)
+
+Indicates that the client needs to authenticate to gain network access.
