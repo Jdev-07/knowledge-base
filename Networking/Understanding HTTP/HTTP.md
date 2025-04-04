@@ -19,3 +19,4 @@ Cross-site HTTP requests are requests for resources from different domain than t
 
 Response status codes indicate the outcome of a specific HTTP request. Response are grouped in five classes: informational, successful, redirections, client errors, and server errors.
 
+[[HTTP Caching]]
