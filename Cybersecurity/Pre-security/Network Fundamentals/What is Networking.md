@@ -19,4 +19,20 @@ IP follows a set of standards knows as protocols. These protocols are the backbo
 
 A public address is used to identify the device on the internet, whereas a private address used to identify a device amongst other devices 
 
-Two devices in the same private network will use the private IP addresses to communicate each other. However, data sent to the Internet from either of these devices will be identified by the same public IP address. Public IP addresses are given by your ISP. 
+Two devices in the same private network will use the private IP addresses to communicate each other. However, data sent to the Internet from either of these devices will be identified by the same public IP address. Public IP addresses are given by your ISP.     
+
+### MAC Addresses
+
+Devices on a network will have a physical network interface. This network interface is assigned a unique address at the factory it was built at, called Media Access Control is a twelve-character split into two's and separated by a colon. The first six characters represent the company that made the NIC, and the last six is a unique number. 
+
+However, the MAC can be faked or spoofed in a process known as spoofing. This spoofing occurs when a networked device pretends to identify as another using its MAC address. When this occurs, it can often break poorly implemented security designs that assume that devices talking on a network are trustworthy. Take the following scenario: A firewall is configured to allow any communication going to and from the MAC address of the administrator. If a device were to pretend or "spoof" this MAC address, the firewall would now think that it is receiving communication from the administrator when it isn't.
+
+## Ping (ICMP)
+
+Ping is one of the most fundamental network tools.  Pings uses ICMP (Internet Control Message Protocol) packets to determine the performance of a network connection between devices. 
+
+The time taken for ICMP packets travelling between devices is measured by ping. This measuring is done using ICMP's echo packet and then ICMP's echo reply from the target device. 
+
+```BASH
+ping 192.168.1.1
+```
