@@ -60,3 +60,47 @@ Subnets use IP addresses in three different ways:
 - Identify the network address
 - Identify the host address
 - Identify the default gateway
+
+
+| Type            | Purpose                                                                                                                                        | Explanation                                                                                                                                                                                                                                          | Example       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| Network Address | This address identifies the start of the actual network and i used to identify a network's existence.                                          | For example, a device with the IP address of 192.168.1.100 will be on the network identified by 192.168.1.0                                                                                                                                          | 192.168.1.0   |
+| Host Address    | An IP address here is used to identify a device on the subnet                                                                                  | For example, a device will have the network address of 192.168.1.1                                                                                                                                                                                   | 192.168.1.100 |
+| Default Gateway | The default gateway address is a special address assigned to a device on the network that is capable of sending information to another network | Any data that needs to go to a device that isn't on the same network (i.e. isn't on 192.168.1.0) will be sent to this device. These devices can use any host address but usually use either the first or last host address in a network (.1 or .254) | 192.168.1.254 |
+Now in small networks such at home, you will be on one subnet as there is an unlikely chance that you need more than 254 devices connected at one time.
+
+However, places such as businesses and offices will have much more of these devices (PCs, printers, cameras and sensors), where subnetting takes place.
+
+Subnetting provides a range of benefits, including:
+
+- Efficiency
+- Security
+- Full control
+
+# ARP
+
+Address Resolution Protocol or ARP for host, is the technology that is responsible for allowing devices to identify themselves on a network. 
+
+Simply, ARP allows a device to associate its MAC address with an IP address on the network. Each device on a network will keep a log of the MAC addresses associated with other devices.
+
+When devices wish to communicate with another, they will send a broadcast to the entire network searching for the specific device. Devices can use ARP to find the MAC address (and therefore the physical identifier) of a device for communication.
+
+### How does ARP work?
+
+Each device within a network has a ledger to store information on, which is called a cache. In the context of ARP, this cache stores the identifiers of other devices on the network.
+
+In order to map these two identifiers together (IP address and MAC address), ARP sends two types of messages:
+
+1. **ARP Request**
+2. **ARP Reply**
+
+When an **ARP request** is sent, a message is broadcasted on the network to other devices asking, "What is the mac address that owns this IP address?" When the other devices receive that message, they will only respond if they own that IP address and will send an **ARP reply** with its MAC address. The requesting device can now remember this mapping and store it in its **ARP cache** for future use.
+
+This process is illustrated in the diagram below:
+![[network-lan-04.png]]
+
+# DHCP
+
+IP addresses can be assigned either manually, by entering them physically into a device, or automatically and most commonly by using a **DHCP** (**D**ynamic **H**ost **C**onfiguration **P**rotocol) server. When a device connects to a network, if it has not already been manually assigned an IP address, it sends out a request (DHCP Discover) to see if any DHCP servers are on the network. The DHCP server then replies back with an IP address the device could use (DHCP Offer). The device then sends a reply confirming it wants the offered IP Address (DHCP Request), and then lastly, the DHCP server sends a reply acknowledging this has been completed, and the device can start using the IP Address (DHCP ACK).
+
+![[network-lan-05.png]]
