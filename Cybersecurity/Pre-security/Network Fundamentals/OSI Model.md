@@ -60,7 +60,7 @@ TCP is used for situations such as **file sharing, internet browsing or sending
 
 In the diagram below, we can see how a picture of a cat is broken down into small pieces of data (known as packets) from the "webserver", where the "computer" re-constructs the picture of the cat into the correct order.
 
-![[network-lqn-08.png]]
+![[network-lan-08.png]]
 
 ### UDP
 
