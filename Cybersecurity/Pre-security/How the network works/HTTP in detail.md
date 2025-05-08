@@ -62,3 +62,101 @@ To breakdown each line of this request:
 **Line 4:** We are telling the web server that the web page that referred us to this one is [https://tryhackme.com](https://tryhackme.com/)
 
 **Line 5:** HTTP requests always end with a blank line to inform the web server that the request has finished.
+
+```HTTP
+HTTP/1.1 200 OK        
+
+Server: nginx/1.15.8        
+Date: Fri, 09 Apr 2021 13:34:03 GMT        
+Content-Type: text/html        
+Content-Length: 98             
+<html>        
+<head>            
+	<title>TryHackMe</title>        
+</head>        
+<body>            
+	Welcome To TryHackMe.com        
+</body>        
+</html>
+```
+
+To breakdown each line of the response:
+
+**Line 1:** HTTP 1.1 is the version of the HTTP protocol the server is using and then followed by the HTTP Status Code in this case "200 Ok" which tells us the request has completed successfully.
+
+**Line 2:** This tells us the web server software and version number.
+
+**Line 3:** The current date, time and time zone of the web server.
+
+**Line 4:** The Content-Type header tells the client what sort of information is going to be sent, such as HTML, images, videos, pdf, XML.
+
+**Line 5:** Content-Length tells the client how long the response is, this way we can confirm no data is missing.
+
+**Line 6:** HTTP response contains a blank line to confirm the end of the HTTP response.
+
+**Lines 7-14:** The information that has been requested, in this instance the homepage.
+
+### HTTP Methods
+
+HTTP methods are a way for the client to show their intended action when making an HTTP request. There are a lot of HTTP methods but we'll cover the most common ones, although mostly you'll deal with the GET and POST method.
+
+**GET Request**
+
+This is used for getting information from a web server.  
+
+**POST Request**
+
+This is used for submitting data to the web server and potentially creating new records  
+
+**PUT Request**
+
+This is used for submitting data to a web server to update information
+
+**DELETE Request**  
+
+This is used for deleting information/records from a web server.
+
+### Headers
+
+Headers are additional bits of data you can send to the web server when making requests.
+
+Although no headers are strictly required when making a HTTP request, you’ll find it difficult to view a website properly.
+
+**Common Request Headers**
+
+﻿These are headers that are sent from the client (usually your browser) to the server.  
+
+**Host:** Some web servers host multiple websites so by providing the host headers you can tell it which one you require, otherwise you'll just receive the default website for the server.  
+
+**User-Agent:** This is your browser software and version number, telling the web server your browser software helps it format the website properly for your browser and also some elements of HTML, JavaScript and CSS are only available in certain browsers.  
+
+**Content-Length:** When sending data to a web server such as in a form, the content length tells the web server how much data to expect in the web request. This way the server can ensure it isn't missing any data.
+
+**Accept-Encoding:** Tells the web server what types of compression methods the browser supports so the data can be made smaller for transmitting over the internet.
+
+  
+
+**Cookie:** Data sent to the server to help remember your information (see cookies task for more information).  
+
+**Common Response Headers**
+
+These are the headers that are returned to the client from the server after a request.
+
+**Set-Cookie:** Information to store which gets sent back to the web server on each request (see cookies task for more information).  
+
+**Cache-Control:** How long to store the content of the response in the browser's cache before it requests it again.  
+
+**Content-Type:** This tells the client what type of data is being returned, i.e., HTML, CSS, JavaScript, Images, PDF, Video, etc. Using the content-type header the browser then knows how to process the data.  
+
+**Content-Encoding:** What method has been used to compress the data to make it smaller when sending it over the internet.
+
+### Cookies
+
+You've probably heard of cookies before, they're just a small piece of data that is stored on your computer. Cookies are saved when you receive a "Set-Cookie" header from a web server. Then every further request you make, you'll send the cookie data back to the web server. Because HTTP is stateless (doesn't keep track of your previous requests), cookies can be used to remind the web server who you are, some personal settings for the website or whether you've been to the website before. Let's take a look at this as an example HTTP request:
+![[http-03.png]]Cookies can be used for many purposes but are most commonly used for website authentication. The cookie value won't usually be a clear-text string where you can see the password, but a token (unique secret code that isn't easily humanly guessable).
+
+**Viewing Your Cookies**
+
+**You can easily view what cookies your browser is sending to a website by using the developer tools, in your browser. If you're not sure how to get to the developer tools in your browser, click on the "View Site" button at the top of this task for a how-to guide.**
+
+**Once you have developer tools open, click on the "Network" tab. This tab will show you a list of all the resources your browser has requested. You can click on each one to receive a detailed breakdown of the request and response. If your browser sent a cookie, you will see these on the "Cookies" tab of the request.**

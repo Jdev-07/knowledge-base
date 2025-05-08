@@ -36,3 +36,10 @@ The time taken for ICMP packets travelling between devices is measured by ping. 
 ```BASH
 ping 192.168.1.1
 ```
+
+We will dive into Networking Basics, the following topics are covered:
+
+[[Intro to LAN]]
+[[OSI Model]]
+[[Packets and Frames]]]
+[[Extending your Network]]
