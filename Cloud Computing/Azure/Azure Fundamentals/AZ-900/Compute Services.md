@@ -20,3 +20,8 @@ While VM emulates the hardware, a container emulates the OS to provide a sandbox
 #### Kubernetes
 
 
+
+#### Azure Functions
+
+#### Azure App Service
+
