@@ -4,13 +4,13 @@
 
 ### Azure PowerShell
 
-PowerhShell and module
+PowerShell and module
 
 Designed for automation
 
 Multi-platform with PowerShell Core
 ### Azure CLI 
 
-Auomation, multi-platform 
+Automation, multi-platform 
 ### Azure Cloud Shell
 
