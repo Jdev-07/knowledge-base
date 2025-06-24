@@ -324,3 +324,85 @@ This script will keep on repeating "This will keep on looping until I stop!" unt
 Now that we have a process running in the background, for example, our script "background.sh" which can be confirmed by using the `ps aux` command, we can back-pedal and bring this process back to the foreground to interact with.
 
 With our process backgrounded using either `Ctrl + Z` or the `&` operator, we can use `fg` to bring this back to focus like below, where we can see the `fg` command is being used to bring the background process back into use on the terminal, where the output of the script is now returned to us.
+
+# Maintaining your system
+
+Users may want to schedule a certain action or task to take place after the system has booted. Take, for example, running commands, backing up files, or launching your favorite programs on, such as Spotify or Google Chrome.
+
+We're going to be talking about the `cron` process, but more specifically, how we can interact with it via the use of `crontabs` . Crontab is one of the processes that is started during boot, which is responsible for facilitating and managing cron jobs.
+
+The config file is located at /tmp/crontab/crontab
+
+A crontab is simply a special file with formatting that is recognized by the `cron` process to execute each line step-by-step. Crontabs require 6 specific values:
+
+| Value | Description                               |
+| ----- | ----------------------------------------- |
+| MIN   | What minute to execute at                 |
+| HOUR  | What hour to execute at                   |
+| DOM   | What day of the month to execute at       |
+| MON   | What month of the year to execute at      |
+| DOW   | What day of the week to execute at        |
+| CMD   | The actual command that will be executed. |
+Let's use the example of backing up files. You may wish to backup "cmnatic"'s  "Documents" every 12 hours. We would use the following formatting:
+
+```SHELL
+0 */12 * * * cp -R /home/cmnatic/Documents /var/backups/
+```
+
+An interesting feature of crontabs is that these also support the wildcard or asterisk (`*`). If we do not wish to provide a value for that specific field, i.e. we don't care what month, day, or year it is executed -- only that it is executed every 12 hours, we simply just place an asterisk.
+
+This can be confusing to begin with, which is why there are some great resources such as the online "[Crontab Generator](https://crontab-generator.org/)" that allows you to use a friendly application to generate your formatting for you! As well as the site "[Cron Guru](https://crontab.guru/)"!
+
+Crontabs can be edited by using `crontab -e`, where you can select an editor (such as Nano) to edit your crontab.
+
+# Maintaining your system: Automation
+
+## Introducing packages & software repos
+
+When developers wish to submit software to the community, they will submit it to an  "apt" repository. If approved, their programs and tools will be released into the wild. Two of the most redeeming features of Linux shine to light here: User accessibility and the merit of open source tools.
+
+When using the `ls` command on a Ubuntu 20.04 Linux machine, these files serve as the gateway/registry.
+
+Whilst Operating System vendors will maintain their own repositories, you can also add community repositories to your list! This allows you to extend the capabilities of your OS. Additional repositories can be added by using the `add-apt-repository`command or by listing another provider! For example, some vendors will have a repository that is closer to their geographical location.
+
+## Managing your repositories 
+
+The `apt` command is a part of the package management software also named apt. Apt contains a whole suite of tools that allows us to manage the packages and sources of our software, and to install or remove software at the same time.
+
+One method of adding repositories is to use the `add-apt-repository` command we illustrated above, but we're going to walk through adding and removing a repository manually. Whilst you can install software through the use of package installers such as `dpkg`, the benefits of apt means that whenever we update our system -- the repository that contains the pieces of software that we add also gets checked for updates. 
+
+In this example, we're going to add the text editor Sublime Text to our Ubuntu machine as a repository as it is not a part of the default Ubuntu repositories. When adding software, the integrity of what we download is guaranteed by the use of what is called GPG (Gnu Privacy Guard) keys. These keys are essentially a safety check from the developers saying, "here's our software". If the keys do not match up to what your system trusts and what the developers used, then the software will not be downloaded.
+
+So, to start, we need to add the GPG key for the developers of Sublime Text 3. (Note that TryHackMe instances do not have internet access and so we're not expecting you to add this to the machine that you deploy, as it would fail.)
+
+**1.** Let's download the GPG key and use apt-key to trust it:  `wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -`
+
+**2.** Now that we have added this key to our trusted list, we can now add Sublime Text 3's repository to our apt sources list. A good practice is to have a separate file for every different community/3rd party repository that we add.
+
+**2.1.** Let's create a file named **sublime-text.list** in **/etc/apt/sources.list.d** and enter the repository information like so:
+**2.2.** And now use Nano or a text editor of your choice to add & save the Sublime Text 3 repository into this newly created file:
+
+**2.3.** After we have added this entry, we need to update apt to recognise this new entry -- this is done using the `apt update` command
+
+**2.4.** Once successfully updated, we can now proceed to install the software that we have trusted and added to apt using `apt install sublime-text`
+
+Removing packages is as easy as reversing. This process is done by using the `add-apt-repository --remove ppa:PPA_Name/ppa` command or by manually deleting the file that we previously added to. Once removed, we can just use `apt remove [software-name-here]` i.e. `apt remove sublime-text`
+
+# Maintaining your system: Logs
+
+We briefly touched upon log files and where they can be found in Linux Fundamentals Part 1. However, let's quickly recap. Located in the /var/log directory, these files and folders contain logging information for applications and services running on your system. The Operating System  (OS) has become pretty good at automatically managing these logs in a process that is known as "rotating".
+
+I have highlighted some logs from three services running on a Ubuntu machine:
+
+- An Apache2 web server
+- Logs for the fail2ban service, which is used to monitor attempted brute forces, for example
+- The UFW service which is used as a firewall
+
+![[linux-001.png]]
+
+These services and logs are a great way in monitoring the health of your system and protecting it. Not only that, but the logs for services such as a web server contain information about every single request - allowing developers or administrators to diagnose performance issues or investigate an intruder's activity. For example, the two types of log files below that are of interest:
+- access log
+- error log
+
+![[linux-002.png]]
+There are, of course, logs that store information about how the OS is running itself and actions that are performed by users, such as authentication attempts.
