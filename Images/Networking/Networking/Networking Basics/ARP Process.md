@@ -76,3 +76,5 @@ ARP uses a three step process to discover and store the MAC address of a host on
 3. The sending host receives the message and stores the MAC address and IPv4 address information in a table called an ARP table.
 
 When the sending host has the MAC address of the destination host in its ARP table, it can send frames directly to the destination without doing an ARP request. Because ARP messages rely on broadcast frames to deliver the requests, all hosts in the local IPv4 network must be in the same broadcast domain.
+
+ARP is local-subnet only. If the destination is on another network, hosts ARP for their default gateway, not the final destination.
