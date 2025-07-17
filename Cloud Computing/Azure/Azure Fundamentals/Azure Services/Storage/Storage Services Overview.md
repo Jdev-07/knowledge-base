@@ -28,3 +28,6 @@ The following table compares Azure Storage services and shows example scenarios 
 | **Azure Managed Lustre**    | Offers a fully managed, pay-as-you-go file system for high-performance computing (HPC) and AI workloads. Designed to simplify operations, reduce setup costs, and eliminate complex maintenance.                                                                                                                                                                                                                                                                                                                                                                          | You want to run HPC workloads that require high throughput and low latency.  <br>  <br>You want to run Lustre workloads in the cloud without the need to manage the underlying infrastructure.                                                                                                                                                                                                                                              |
 
 ##### [[1.0 Azure Blob Storage]]
+
+##### [[2.0 Azure Disk Storage]]
+
