@@ -31,3 +31,9 @@ The following table compares Azure Storage services and shows example scenarios 
 
 ##### [[2.0 Azure Disk Storage]]
 
+##### [[3.0 Azure File Storage]]
+
+##### [[4.0 Azure Queues]]
+
+##### [[5.0 Azure Table Storage]]
+
