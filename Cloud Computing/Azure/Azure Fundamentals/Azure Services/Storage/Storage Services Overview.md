@@ -37,3 +37,6 @@ The following table compares Azure Storage services and shows example scenarios 
 
 ##### [[5.0 Azure Table Storage]]
 
+##### [[6.0 Data Migration]]
+
+##### [[7.0 Azure file movement options]]
