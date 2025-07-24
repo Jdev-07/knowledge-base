@@ -33,3 +33,6 @@ For hosting models, cloud services fall into three categories:
 
 ##### [[3.0 App Services]]
 
+##### [[4.0 Function Apps]]
+
+##### [[5.0 Azure Logic Apps]]
