@@ -8,3 +8,8 @@ The networking services in Azure provide various networking capabilities that ca
 
 Below is describe each service in a detailed manner
 
+[[1.0 Virtual Networks]]
+
+[[1.1 Virtual Network Peering]]
+
+[[2.0 Hybrid connectivity]]
