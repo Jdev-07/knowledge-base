@@ -136,3 +136,5 @@ https://aws.amazon.com/what-is-cloud-computing/?nc1=f_cc
 https://aws.amazon.com/compliance/shared-responsibility-model/
 
 https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
+
+[[Compute in the Cloud]]
