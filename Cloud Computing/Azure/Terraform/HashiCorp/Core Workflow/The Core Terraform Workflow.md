@@ -103,3 +103,30 @@ Running iterative plans is still useful as a feedback loop while authoring confi
 To avoid the burden and the security risk of each team member arranging all sensitive inputs locally, it's common for teams to migrate to a model in which Terraform operations are executed in a shared Continuous Integration (CI) environment. The work needed to create such a CI environment is nontrivial, and is outside the scope of this core workflow overview, but a full deep dive on this topic can be found in our [Running Terraform in Automation](https://developer.hashicorp.com/terraform/tutorials/automation/automate-terraform?utm_source=WEBSITE&utm_medium=WEB_IO&utm_offer=ARTICLE_PAGE&utm_content=DOCS) guide.
 
 This longer iteration cycle of committing changes to version control and then waiting for the CI pipeline to execute is often lengthy enough to prohibit using speculative plans as a feedback loop while authoring individual Terraform configuration changes. Speculative plans are still useful before new Terraform changes are applied or even merged to the main development branch, however, as we'll see in a minute.  
+
+### Plan
+
+Once a pull request is ready for review, Terraform Cloud makes the process of reviewing a speculative plan easier for team members. First, the plan is automatically run when the pull request is created. Status updates to the pull request indicate while the plan is in progress.
+
+Once the plan is complete, the status update indicates whether there were any changes in the speculative plan, right from the pull request view.
+
+![[terraform-007.png]]
+
+For certain types of changes, this information is all that's needed for a team member to be able to approve the pull request. When a teammate needs to do a full review of the plan, clicking the link to Terraform Cloud brings up a view that allows them to quickly analyze the full plan details.
+
+![[terraform-008.png]]
+This page allows the reviewer to quickly determine if the plan is matching the config author's intent and evaluate the risk of the change.
+
+### Apply
+
+After merge, Terraform Cloud presents the concrete plan to the team for review and approval.
+
+![[terraform-009.png]]The team can discuss any outstanding questions about the plan before the change is made.
+
+![[terraform-010.png]]Once the Apply is confirmed, Terraform Cloud displays the progress live to anyone who'd like to watch.
+
+![[terraform-011.png]]
+
+## Conclusion
+
+There are many different ways to use Terraform: as an individual user, a single team, or an entire organization at scale. Choosing the best approach for the density of collaboration needed will provide the most return on your investment in the core Terraform workflow. For organizations using Terraform at scale, Terraform Cloud introduces new layers that build on this core workflow to solve problems unique to teams and organizations.
