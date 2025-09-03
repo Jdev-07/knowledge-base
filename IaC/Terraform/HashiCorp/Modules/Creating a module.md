@@ -1,3 +1,4 @@
+# Build and use a local module
 ## Module structure
 
 Terraform treats any local directory referenced in the `source` argument of a `module` block as a module. A typical file structure for a new module is:
@@ -38,8 +39,9 @@ Now install the module by running `terraform get`.
 When installing a remote module, Terraform will download it into the `.terraform` directory in your configuration's root directory. When installing a local module, Terraform will instead refer directly to the source directory. Because of this, Terraform will automatically notice changes to local modules without having to re-run `terraform init` or `terraform get`.
 
 ---
+# Customize modules with object attributes
 
-# Object Attributes
+## Object Attributes
 
 Terraform modules let you organize and re-use Terraform configuration. They make your infrastructure deployments consistent and help your team adhere to your organization's best practices. Input variables let module users customize attributes of the module. You can define module attributes using strings, numbers, booleans, lists, maps, and objects.
 
@@ -71,3 +73,59 @@ The `cors_rules` variable contains a list of objects. Since the default value 
 
 Use the `cors_rules` variable by adding a new resource to `modules/aws-s3-static-website/main.tf`.
 
+```Go
+resource "aws_s3_bucket_cors_configuration" "web" {
+  count = length(var.cors_rules) > 0 ? 1 : 0
+
+  bucket = aws_s3_bucket.web.id
+
+  dynamic "cors_rule" {
+    for_each = var.cors_rules
+
+    content {
+      allowed_headers = cors_rule.value["allowed_headers"]
+      allowed_methods = cors_rule.value["allowed_methods"]
+      allowed_origins = cors_rule.value["allowed_origins"]
+      expose_headers  = cors_rule.value["expose_headers"]
+      max_age_seconds = cors_rule.value["max_age_seconds"]
+    }
+  }
+}
+```
+
+This resource uses the `dynamic` block to create a `cors_rule` block for each item in the `var.cors_rules` list. When the list is empty, the `count` meta-argument will evaluate to `0`, and Terraform will not provision this resource. Otherwise, the `dynamic` block will create a CORS rule for each object in the list. Since optional object attributes default to `null`, Terraform will not set values for them unless the module user specifies them.
+
+Update the module block in `main.tf` in the repository root directory to use the new variable. These example rules limit `PUT` and `POST` requests to an example domain, and permit `GET` requests from anywhere.
+
+```Go
+module "website_s3_bucket" {
+  source = "./modules/aws-s3-static-website"
+
+  bucket_prefix = "module-object-attributes-"
+
+  files = {
+    terraform_managed = true
+    www_path          = "${path.root}/www"
+  }
+
+  cors_rules = [
+    {
+      allowed_headers = ["*"],
+      allowed_methods = ["PUT", "POST"],
+      allowed_origins = ["https://test.example.com"],
+      expose_headers  = ["ETag"],
+      max_age_seconds = 3000
+    },
+    {
+      allowed_methods = ["GET"],
+      allowed_origins = ["*"]
+    }
+  ]
+
+  tags = {
+    terraform     = "true"
+    environment   = "dev"
+    public-bucket = true
+  }
+}
+```

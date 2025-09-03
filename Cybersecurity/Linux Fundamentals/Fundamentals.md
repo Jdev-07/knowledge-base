@@ -398,11 +398,11 @@ I have highlighted some logs from three services running on a Ubuntu machine:
 - Logs for the fail2ban service, which is used to monitor attempted brute forces, for example
 - The UFW service which is used as a firewall
 
-![[linux-001.png]]
+![[knowledge-base/Images/Networking/linux-001.png]]
 
 These services and logs are a great way in monitoring the health of your system and protecting it. Not only that, but the logs for services such as a web server contain information about every single request - allowing developers or administrators to diagnose performance issues or investigate an intruder's activity. For example, the two types of log files below that are of interest:
 - access log
 - error log
 
-![[linux-002.png]]
+![[knowledge-base/Images/Networking/linux-002.png]]
 There are, of course, logs that store information about how the OS is running itself and actions that are performed by users, such as authentication attempts.
