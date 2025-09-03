@@ -170,13 +170,13 @@ Basically, it tells you what’s happening on your network:
 
 To list all listening ports, using both TCP and UDP, use `netstat -a`:
 
-![[linux-001.png]]
+![[knowledge-base/Cloud Computing/GCP/Learning Path/Linux/images/linux-001.png]]
 
 2. List only TCP port connections
 
 If you found the `-a` option to be too verbose, try the `-t` flag with it:
 
-![[linux-002.png]]
+![[knowledge-base/Cloud Computing/GCP/Learning Path/Linux/images/linux-002.png]]
 3. List only UDP connections
 
 The same filter can be used to pull UDP connections down. Seen here:
@@ -318,3 +318,10 @@ Will deep dive into Networking commands and tools in the following: [[Networking
 | sleep    | Delay for a specified amount of time                          | sleep 5             |
 | time     | Measure the duration of commands                              | time ls             |
 | watch    | Execute a program periodically, showing the output fullscreen | watch -n 5 df -h    |
+
+--- 
+
+Check related content:
+[[The Linux Filesystem]]
+[[Networking Tools and Commands]]
+[[Linux File Permissions and Ownership]]
