@@ -1,3 +1,5 @@
+# Linux Filesystem 
+
 ![[linux-005.png]]
 
 Linux has a **single tree-like filesystem** that starts at **`/`** (the _root directory_).  
