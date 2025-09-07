@@ -169,3 +169,360 @@ Each **hop** shows:
 - 🕵️ Detect routing loops → See if packets bounce between routers endlessly.
     
 - 📡 Cloud/server debugging → Find out where connectivity breaks (local ISP, backbone, or target server)
+
+
+## tcpdump 
+
+`tcpdump` is a **packet analyzer**. It captures and displays network traffic going through your interfaces in real time.
+
+### 🎯 Purpose
+
+- Debugging **network problems**.
+    
+- Inspecting **traffic flow** (in/out of an interface).
+    
+- Security analysis (spot suspicious traffic, scanning, etc.).
+    
+- Learning how protocols (TCP, UDP, HTTP, DNS, etc.) actually work on the wire.
+
+### ⚙️ Functions / Options (most useful)
+
+- `tcpdump -i eth0` → Capture packets on `eth0`.
+    
+- `tcpdump -n` → Don’t resolve hostnames (show raw IPs).
+    
+- `tcpdump -nn` → Don’t resolve hostnames **or ports** (faster).
+    
+- `tcpdump -c 10` → Capture only 10 packets.
+    
+- `tcpdump -w file.pcap` → Save packets to a file for Wireshark analysis.
+    
+- `tcpdump -r file.pcap` → Read and display from a saved file.
+
+### 🧩 Filters (the real power)
+
+- `tcpdump port 80` → Capture only HTTP traffic.
+    
+- `tcpdump host 8.8.8.8` → Capture only traffic to/from Google DNS.
+    
+- `tcpdump src 192.168.1.10` → Capture traffic from a specific source.
+    
+- `tcpdump dst port 443` → Capture traffic going to HTTPS.
+    
+- `tcpdump tcp` → Only TCP packets.
+    
+- `tcpdump udp` → Only UDP packets.
+
+### 💻 Examples
+
+1. Capture all traffic on default interface:
+
+```bash
+sudo tcpdump -i eth0
+```
+
+2. Capture traffic to/from a specific ip:
+
+```bash
+sudo tcpdump -i eth0 host 8.8.8.8
+```
+
+3. Capture HTTP traffic and save it for later:
+
+```bash
+sudo tcpdump -i eth0 port 80 -w capture.pcap
+```
+
+4. Read back a capture file
+
+```bash
+tcpdump -r capture.pcap
+```
+
+### 🌍 Scenarios / When to Use It
+
+- 🛠 **Troubleshooting** → Check if packets are actually leaving your server to the right destination.
+    
+- 🔐 **Security** → See if there’s strange traffic (like connections to unknown IPs).
+    
+- 🌐 **Performance** → Measure delays, retransmissions, or packet drops.
+    
+- 📡 **Learning** → Watch how DNS queries, TCP handshakes, or HTTP requests look in real life.
+    
+
+⚠️ **Note**: `tcpdump` usually requires **root privileges** (`sudo`) since it captures low-level packets.
+
+### How to read the tcpdump output
+
+#### 🧩 Example tcpdump output
+
+```output
+10:15:42.123456 IP 192.168.1.10.54321 > 172.217.165.196.80: Flags [S], seq 123456789, win 64240, length 0
+10:15:42.234567 IP 172.217.165.196.80 > 192.168.1.10.54321: Flags [S.], seq 987654321, ack 123456790, win 65535, length 0
+10:15:42.345678 IP 192.168.1.10.54321 > 172.217.165.196.80: Flags [.], ack 987654322, win 64240, length 0
+```
+
+#### 🔎 Breaking it down
+
+Each line = one packet.
+
+```bash
+10:15:42.123456   → Timestamp
+IP                → Protocol
+192.168.1.10.54321 → Source IP + Port
+172.217.165.196.80 → Destination IP + Port
+Flags [S]          → TCP flag (here: SYN)
+seq 123456789      → Sequence number
+ack 123456790      → Acknowledgment number
+win 64240          → Window size (buffer)
+length 0           → Payload size
+```
+
+#### 🚦 Key TCP flags
+
+- **[S] SYN** → Client wants to start a connection.
+    
+- **[S.] SYN-ACK** → Server replies, “Sure, let’s connect.”
+    
+- **[.] ACK** → Client acknowledges → **handshake complete**.
+    
+- **[P.] PSH-ACK** → Packet with data (like an HTTP request).
+    
+- **[F.] FIN** → Sender wants to close the connection.
+    
+- **[R] RST** → Reset → connection aborted (often errors).
+
+## netcat
+
+Netcat is one of the most powerful networking tools, security tools, and network monitoring tools. It is even considered a Swiss army knife of networking tools. It acts like a cat command over a network. It is generally used for the following reasons:
+
+### 🎯 Purpose
+
+- Operation related to TCP, UDP, or UNIX-domain sockets.
+- Port Scanning
+- Port Listening
+- Port redirection
+- open Remote connections
+- Read/Write data across the network.
+- Network debugging
+- Network daemon testing
+- Simple TCP proxies
+- A Socks or HTTP Proxy Command for ssh
+
+It is designed by keeping in mind that it should be a flexible "back-end" tool that can be used directly or driven by any other program.
+
+### ⚙️ Key Functions / Options
+
+- `nc <option> <host> <port>` → connect to a host on a port.
+    
+- `nc -l <port>` → listen on a port (server mode).
+    
+- `-u` → use UDP instead of TCP.
+    
+- `-v` → verbose (show more info).
+    
+- `-z` → scan mode (just check if port is open, no data sent).
+	 
+* `-U` → use Unix domain sockets
+	
+- `-w` → set a timeout for connections
+	
+- `-p` → specifies the source port number
+	
+- `nc -k -l` → continue listening after disconnection
+	
+- `-n` → skip DNS lookups
+
+### ⚡ Netcat Working Modes
+
+#### 🔹 1. Connect Mode (Client)
+
+- Netcat **initiates a connection** to a remote service (like a browser connecting to a website).
+    
+- You must provide a **host** (IP or domain) and a **port**.
+    
+- Useful for:
+    
+    - Testing if a port is open.
+        
+    - Sending/receiving data manually (HTTP requests, SMTP commands, etc).
+        
+    - Debugging connectivity.
+        
+- Example:
+
+```bash
+nc example.com 80
+```
+
+#### 🔹 2. Listen Mode (Server)
+
+- Netcat **waits for incoming connections** on a given port (like a web server does).
+    
+- Optionally bind to a specific IP/interface (default: all).
+    
+- Useful for:
+    
+    - Creating a simple server or backdoor.
+        
+    - Receiving files/data.
+        
+    - Testing client connections.
+        
+- Example:
+
+```bash
+nc -lv 192.168.0.1 8080
+```
+
+##### ✅ Quick Recap
+
+- **Connect mode = Client** → you start the connection.
+    
+- **Listen mode = Server** → you wait for connections.
+    
+- Together, they can simulate full client-server interactions.
+
+### Scenarios
+
+#### Client/Server Connection
+
+A simple client/server connection is between two devices. One device acts as a server (listens) while the other acts as a client (connects).
+
+1. On device 1, run the nc command in listen mode and provide a port:
+
+```bash
+nc -lv 1234
+```
+
+The **`-l`** option activates listen mode, making device 1 the server. The output shows the device listening for connections due to the **`-v`** option.
+
+2. On device 2, run the **`nc`** command with the IP address of device 1 and the port:
+
+```bash
+nc -v 10.0.2.4 1234
+```
+
+Once the client/server connection establishes successfully you can send a message from either device. 
+
+#### Ping Specific Port on Website
+
+Use Netcat as an alternative to the ping command to test a specific port to a website. For example:
+
+```bash
+nc -zv google.com 443
+```
+
+```output
+DNS fwd/rev mismatch: google.com != mia07s60-in-f14.1e100.net
+google.com [142.250.217.174] 80 (http) open
+```
+
+If the ping succeeds, the output shows the successful connection message. The -z option ensures the connection does not persist.
+
+Netcat does not give any specific information, and there are other methods to ping a specific port.
+
+#### Scanning Ports
+
+Use the **`nc`** command to scan for open ports.
+
+1. Run **`nc`** on device 1 to listen on port 1234:
+
+```bash
+nc -lkv 1234
+```
+
+The **`-k`** option ensures the connection stays open after a disconnect.
+
+2. Run the following command on device 2 to check whether port 1234 is open:
+
+```bash
+nc -zv 10.0.2.4 1234
+```
+
+If the port is open, the output shows a successful connection message.
+
+3. Alternatively, scan multiple ports on device 2 by adding a port range. For example:
+
+```bash
+nc -zv 10.0.2.4 1230-1235
+```
+
+4. When scanning for port ranges, filter the results using grep:
+
+```bash
+nc -zv 10.0.2.4 1230-1235 2>&1 | grep 'succeeded'
+```
+
+For example, grepping for the word _**`succeeded`**_ only shows open ports in the output.
+
+#### Transfer files
+
+Netcat allows transferring files through established connections. To see how file transfers work, do the following:
+
+1. Create a sample file on device 1 using the **`touch`** command:
+
+```bash
+touch file.txt
+```
+
+2. Create a listening connection on device 1 and redirect the file to the **`nc`** command:
+
+```bash
+nc -lv 1234 < file.txt
+```
+
+3. On device 2, connect to device 1 and redirect the file:
+
+```bash
+nc -zv 10.0.2.4 1234 > file.txt
+```
+
+#### Transfer Dirs
+
+Netcat does not allow transferring directories in the same way as files. Use the tar command to send multiple files or directories and pipe the command to Netcat.
+
+1. Create a directory on either device and add multiple files:
+
+```bash
+mkdir files; touch files/file{1..5}.txt
+```
+
+The command creates a files directory with five text files.
+
+2. Navigate to the directory using the cd command:
+
+```bash
+cd files
+```
+
+3. On the other device, create and enter the destination directory:
+
+```bash
+mkdir files_destination && cd files_destination
+```
+
+4. Create a listening connection on port 1234 and pipe the **`tar`** command:
+
+```bash
+nc -lv 1234 | tar xfv -
+```
+
+The listening connection expects a file that tar extracts.
+
+5. On the other device, send the directory with:
+
+```bash
+tar -cf - . | nc -v 10.0.2.5 1234
+```
+
+The connection establishes and sends the tar file.
+
+### References
+
+[nc Command (Netcat) with Examples](https://phoenixnap.com/kb/nc-command)
+
+[practical uses of netcat](https://www.geeksforgeeks.org/linux-unix/practical-uses-of-ncnetcat-command-in-linux/)
+
+[how to use netcat: commands](https://www.varonis.com/blog/netcat-commands#create-a-chat-or-web-server)
+
