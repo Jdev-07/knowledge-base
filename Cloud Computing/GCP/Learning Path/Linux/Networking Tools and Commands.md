@@ -526,3 +526,186 @@ The connection establishes and sends the tar file.
 
 [how to use netcat: commands](https://www.varonis.com/blog/netcat-commands#create-a-chat-or-web-server)
 
+
+## curl
+
+`curl` = **Client URL**.  
+It’s a command-line tool to **transfer data to/from a server** using many protocols (HTTP, HTTPS, FTP, SMTP, etc).
+
+### 🎯 Purpose
+
+- Test APIs and web servers.
+    
+- Download files from the internet.
+    
+- Send requests (GET, POST, PUT, DELETE).
+    
+- Debug headers, authentication, redirects.
+
+### ⚙️ Common Options
+
+- `-v` → verbose, show request + response details.
+    
+- `-I` → fetch only HTTP headers (HEAD request).
+    
+- `-L` → follow redirects.
+    
+- `-o file` → save output to file.
+    
+- `-d` → send data (POST).
+    
+- `-H` → add custom header.
+
+### 💻 Examples
+
+1. Simple GET request
+
+```bash
+curl https://example.com
+```
+
+Fetches and prints the HTML content 
+
+```html
+<!doctype html>
+<html>
+<head>
+    <title>Example Domain</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type="text/css">
+    body {
+        background-color: #f0f0f2;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    }
+    div {
+        width: 600px;
+        margin: 5em auto;
+        padding: 2em;
+        background-color: #fdfdff;
+        border-radius: 0.5em;
+        box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+    }
+    a:link, a:visited {
+        color: #38488f;
+        text-decoration: none;
+    }
+    @media (max-width: 700px) {
+        div {
+            margin: 0 auto;
+            width: auto;
+        }
+    }
+    </style>
+</head>
+
+<body>
+<div>
+    <h1>Example Domain</h1>
+    <p>This domain is for use in illustrative examples in documents. You may use this
+    domain in literature without prior coordination or asking for permission.</p>
+    <p><a href="https://www.iana.org/domains/example">More information...</a></p>
+</div>
+</body>
+</html>
+
+```
+
+2. Show response headers only
+
+```bash
+curl -I https://example.com
+```
+
+```http
+HTTP/2 200
+content-type: text/html
+etag: "84238dfc8092e5d9c0dac8ef93371a07:1736799080.121134"
+last-modified: Mon, 13 Jan 2025 20:11:20 GMT
+cache-control: max-age=86000
+date: Mon, 08 Sep 2025 01:51:10 GMT
+alt-svc: h3=":443"; ma=93600,h3-29=":443"; ma=93600
+```
+
+3. Verbose mode (debugging)
+
+```bash
+curl -v https://example.com
+```
+
+4. Follow redirects
+
+```bash
+curl -L http://example.com
+```
+
+5. Send POST request with data
+
+```bash
+curl -X POST -d "username=jony&password=1234" https://example.com/login
+```
+
+6. Add customer header (common for APIs)
+
+```bash
+curl -H "Authorization: Bearer <token>" https://api.example.com/data
+```
+
+### 🌍 Scenarios
+
+- 🕵️ **Debugging APIs** → check responses, headers, authentication.
+    
+- 📥 **File downloads** → quick and scriptable.
+    
+- 🛠 **Testing servers** → is a website up? is HTTPS working?
+    
+- 🔐 **Security checks** → see raw responses, cookies, redirections.
+
+## systemctl
+
+`systemctl` is the main command-line tool to **manage systemd services and system state** on Linux. It’s used to **start, stop, enable, disable, restart, or check the status of services**, as well as manage system targets (like boot mode).
+
+### ⚙️ Common uses
+
+- Start a service:
+
+```bash
+sudo systemctl start nginx
+```
+
+- Stop a service:
+
+```bash
+sudo systemctl stop nginx
+```
+
+- Restart a service
+
+```bash
+sudo systemctl restart nginx
+```
+
+- Enable at boot
+
+```bash
+sudo systemctl enable nginx
+```
+
+- Check service status
+
+```bash
+systemctl status nginx
+```
+
+### 🌍 Scenarios
+
+- 🛠 **Troubleshooting** → check if a service is running (like `systemctl status ssh`).
+    
+- ⚡ **Administration** → restart services after configuration changes.
+    
+- 🔄 **Automation** → enable critical services to auto-start at boot.
