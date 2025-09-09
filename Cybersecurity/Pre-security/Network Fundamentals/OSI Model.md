@@ -99,3 +99,183 @@ Security features such as data encryption (like HTTPS when visiting a secure sit
 The application layer of the OSI model is the layer that you will be most familiar with. This familiarity is because the application layer is the layer in which protocols and rules are in place to determine how the user should interact with data sent or received.
 
 Everyday applications such as email clients, browsers, or file server browsing software such as FileZilla provide a friendly, **G**raphical **U**ser **I**nterface (**GUI**) for users to interact with data sent or received. Other protocols include **DNS** (**D**omain **N**ame **S**ystem), which is how website addresses are translated into IP addresses.
+
+## Scenario
+
+👉 **You type `www.google.com` in your web browser and hit Enter.**
+
+---
+
+## 🔎 Step-by-Step OSI Model Example
+
+### Layer 7 – Application Layer
+
+- Your browser (Chrome, Edge, etc.) wants to fetch Google’s homepage.
+    
+- It uses **HTTP/HTTPS protocol**.
+    
+- The browser also requests DNS resolution to find the IP of `www.google.com`.
+    
+
+**What happens here:** The request is prepared as application data → “Get me Google’s homepage!”
+
+---
+
+### Layer 6 – Presentation Layer
+
+- If using HTTPS (which Google does), your browser and Google’s server agree on **encryption methods (TLS/SSL)**.
+    
+- Data (like your login cookies or search queries) will be **encrypted and compressed** before sending.
+    
+
+**What happens here:** Data becomes secure and ready for transmission.
+
+---
+
+### Layer 5 – Session Layer
+
+- A **session** is created between your browser and Google’s server.
+    
+- Think of it as: “Keep this conversation open until I’m done browsing.”
+    
+- Session management ensures that if you send multiple requests, they all belong to the same ongoing interaction.
+    
+
+**What happens here:** A session is opened → the browser and server stay connected until you close the tab or log out.
+
+---
+
+### Layer 4 – Transport Layer
+
+- Your browser uses **TCP** (Transmission Control Protocol) because HTTP/HTTPS requires reliable communication.
+    
+- TCP:
+    
+    - Splits data into **segments**.
+        
+    - Adds **port numbers** (e.g., your browser uses a random high port, Google listens on port **443** for HTTPS).
+        
+    - Ensures **error-free delivery** and retransmits if packets are lost.
+        
+
+**What happens here:** “I’m sending this request from my port 49502 → to Google’s port 443.”
+
+---
+
+### Layer 3 – Network Layer
+
+- The data is now a **packet**.
+    
+- Your PC adds **source IP** (e.g., `192.168.1.10`) and **destination IP** (Google’s server, e.g., `142.250.72.36`).
+    
+- Routers along the way decide the **best route** to get the packet from your ISP → Google’s data center.
+    
+
+**What happens here:** “Send this packet from my IP to Google’s IP, route it however you need.”
+
+---
+
+### Layer 2 – Data Link Layer
+
+- The packet is placed inside a **frame**.
+    
+- The frame includes **MAC addresses**:
+    
+    - Source MAC = your network card.
+        
+    - Destination MAC = your router (next hop).
+        
+- Switches and routers use these MACs to forward data locally.
+    
+
+**What happens here:** “Send this frame from my laptop’s NIC to the router’s NIC.”
+
+---
+
+### Layer 1 – Physical Layer
+
+- Finally, the frame is turned into **electrical signals, light pulses, or radio waves** depending on your medium:
+    
+    - Wi-Fi → radio waves.
+        
+    - Ethernet → electrical signals.
+        
+    - Fiber → light pulses.
+        
+- The signals travel across cables/air until they reach the router, then hop across the Internet.
+    
+
+**What happens here:** The **actual 1s and 0s** move across the wire/wireless medium.
+
+## Examples
+
+### 📨 Example 1 – Sending an Email
+
+- **Layer 7 (Application):** You compose an email in Gmail or Outlook → uses **SMTP** to send the message.
+    
+- **Layer 6 (Presentation):** If the email contains attachments, they may be **encoded or compressed** (e.g., Base64, ZIP). Encryption (TLS) may also protect the transfer.
+    
+- **Layer 5 (Session):** A session is established with the mail server so your email doesn’t get cut off halfway.
+    
+- **Layer 4 (Transport):** **TCP** ensures the email is delivered reliably to the mail server on port **25** or **587**.
+    
+- **Layer 3 (Network):** The email is routed across networks using **IP addresses**.
+    
+- **Layer 2 (Data Link):** Each hop across switches/routers uses **MAC addresses**.
+    
+- **Layer 1 (Physical):** Actual bits travel through Wi-Fi, copper, or fiber.
+    
+
+---
+
+### 📱 Example 2 – Making a WhatsApp Call
+
+- **Layer 7:** WhatsApp app uses **VoIP protocols** to set up the call.
+    
+- **Layer 6:** Audio is **compressed and possibly encrypted** (end-to-end encryption).
+    
+- **Layer 5:** A session is established to keep the call active.
+    
+- **Layer 4:** **UDP** is used instead of TCP, since speed is more important than perfect reliability in voice calls.
+    
+- **Layer 3:** Packets containing voice data are routed across the Internet with IP.
+    
+- **Layer 2:** Frames move from your phone to your router and onward.
+    
+- **Layer 1:** Radio waves carry the call over 4G/Wi-Fi.
+    
+
+---
+
+### 🎮 Example 3 – Online Gaming
+
+- **Layer 7:** The game client communicates with the game server (e.g., Fortnite, Call of Duty).
+    
+- **Layer 6:** Game data may be encoded/compressed for faster transmission.
+    
+- **Layer 5:** A session is established between your console/PC and the game server.
+    
+- **Layer 4:** **UDP** is often used for real-time updates (position, movement), while **TCP** may handle chat or purchases.
+    
+- **Layer 3:** Player actions are encapsulated in packets with source/destination IPs.
+    
+- **Layer 2:** Frames are exchanged via your local network.
+    
+- **Layer 1:** Bits travel through your Internet connection to the server.
+    
+
+---
+
+### 📂 Example 4 – File Sharing (SMB or FTP)
+
+- **Layer 7:** You use FTP/SMB to download a file.
+    
+- **Layer 6:** Data may be encrypted (SFTP, FTPS).
+    
+- **Layer 5:** The file transfer session stays alive until the file is fully downloaded.
+    
+- **Layer 4:** **TCP** guarantees file integrity and retransmits if a packet is lost.
+    
+- **Layer 3:** The file is split into packets with IP addresses.
+    
+- **Layer 2 & 1:** Frames and signals deliver data across the LAN/Internet.
