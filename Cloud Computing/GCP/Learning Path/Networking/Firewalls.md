@@ -374,3 +374,210 @@ Rules are like “if-then” conditions. Each rule typically checks:
 
 ## Firewalls command in Linux
 
+### What is UFW?
+
+- A **user-friendly command-line tool** to manage firewall rules on Linux.
+    
+- Default in Ubuntu/Debian-based distros (but installable on others).
+    
+- Designed to simplify tasks like "allow SSH" or "deny HTTP" without needing long `iptables` commands.
+    
+
+👉 Think of it as a **shortcut system** that writes iptables rules for us.
+
+### Basic structure, usage and flags
+
+**Rules can be based on:**
+
+- Port numbers
+
+- Protocols (TCP/UDP)
+
+- IP addresses/subnets
+
+- Applications (using profiles)
+
+#### Enable/Disable Firewall
+
+```bash
+ufw enable      # Turns firewall on
+ufw disable     # Turns firewall off
+ufw status      # Shows current rules
+ufw status verbose   # Shows detailed info
+```
+
+#### Allow/Deny Services
+
+We can get a list of the services with the following command:
+
+```bash
+less /etc/services
+```
+
+Structure:
+
+```bash
+sudo ufw allow <service name>
+```
+
+```bash
+ufw allow ssh           # Allow SSH (port 22)
+ufw allow 80/tcp        # Allow HTTP
+ufw allow 443/tcp       # Allow HTTPS
+ufw deny 25/tcp         # Deny SMTP
+```
+
+We can also specify ranges
+
+```bash
+ufw allow 1000:2000/tcp
+```
+
+#### Allow and Deny (specific rules)
+
+Allow structure
+
+```bash
+sudo ufw allow <port>/<optional: protocol>
+```
+
+**example:** To allow incoming tcp and udp packet on port 53
+
+```bash
+sudo ufw allow 53
+```
+
+**example:** To allow incoming tcp packets on port 53
+
+```bash
+sudo ufw allow 53/tcp
+```
+
+**example:** To allow incoming udp packets on port 53
+
+```bash
+ sudo ufw allow 53/udp
+```
+
+Deny structure
+
+```bash
+sudo ufw deny <port>/<optional: protocol>
+```
+
+#### Delete existing rule
+
+To delete a rule, simply prefix the original rule with delete. For example, if the original rule was:
+
+```bash
+ufw deny 80/tcp
+```
+
+Use this to delete it
+
+```bash
+sudo ufw delete deny 80/tcp
+```
+#### Logging 
+
+To enable logging use:
+
+```bash
+sudo ufw logging on
+```
+
+To disable it
+
+```bash
+sudo ufw logging off
+```
+
+### Advanced syntax
+
+#### Allow Access 
+
+By specific IP
+
+```bash
+sudo ufw allow from <ip address>
+```
+
+example: To allow packets from 207.46.232.182:
+
+```bash
+sudo ufw allow from 207.46.232.182
+```
+
+- Allow by subnet
+
+```bash
+sudo ufw allow from 192.168.1.0/24
+```
+
+- Allow by specific port and IP address
+
+```bash
+sudo ufw allow from <target> to <destination> port <port number>
+```
+
+example: allow IP address 192.168.0.4 access to port 22 for all protocols
+
+```bash
+sudo ufw allow from 192.168.0.4 to any port 22
+```
+
+- Allow by specific port, IP address and protocol
+
+```bash
+sudo ufw allow from <target> to <destination> port <port number> proto <protocol name>
+```
+
+example: allow IP address 192.168.0.4 access to port 22 using TCP
+
+```bash
+sudo ufw allow from 192.168.0.4 to any port 22 proto tcp
+```
+
+#### Enable PING
+
+Note: Security by obscurity may be of very little actual benefit with modern cracker scripts. **By default, UFW allows ping requests**. You may find you wish to leave (icmp) ping requests enabled to diagnose networking problems.
+
+In order to disable ping (icmp) requests, you need to edit **/etc/ufw/before.rules** and remove the following lines:
+
+```bash
+# ok icmp codes
+-A ufw-before-input -p icmp --icmp-type destination-unreachable -j ACCEPT
+-A ufw-before-input -p icmp --icmp-type source-quench -j ACCEPT
+-A ufw-before-input -p icmp --icmp-type time-exceeded -j ACCEPT
+-A ufw-before-input -p icmp --icmp-type parameter-problem -j ACCEPT
+-A ufw-before-input -p icmp --icmp-type echo-request -j ACCEPT
+```
+
+or change the "ACCEPT" to "DROP"
+
+```bash
+# ok icmp codes
+-A ufw-before-input -p icmp --icmp-type destination-unreachable -j DROP
+-A ufw-before-input -p icmp --icmp-type source-quench -j DROP
+-A ufw-before-input -p icmp --icmp-type time-exceeded -j DROP
+-A ufw-before-input -p icmp --icmp-type parameter-problem -j DROP
+-A ufw-before-input -p icmp --icmp-type echo-request -j DROP
+```
+
+We can also specify a destination
+
+- Subnet to subnet
+
+```bash
+ufw allow from 192.168.1.0/24 to 10.0.0.0/24 port 80 proto tcp
+```
+
+**Advanced example**
+
+**Scenario:** You want to block access to port 22 from 192.168.0.1 and 192.168.0.7 but allow all other 192.168.0.x IPs to have access to port 22 using tcp
+
+```bash
+sudo ufw deny 192.168.0.1 to any port 22
+sudo ufw deny 192.168.0.7 to any port 22
+sudo ufw allow 192.168.0.0/24 to any port 22 proto tcp
+```
