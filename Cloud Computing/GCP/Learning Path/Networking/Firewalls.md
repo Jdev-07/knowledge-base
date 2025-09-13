@@ -754,3 +754,10 @@ Source NAT (SNAT) for static IP on outbound (in POSTROUTING):
 ```bash
 iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 198.51.100.5
 ```
+
+**Reference**
+
+[UFW](https://help.ubuntu.com/community/UFW#Basic_Syntax_and_Examples)
+
+[iptables](https://www.digitalocean.com/community/tutorials/iptables-essentials-common-firewall-rules-and-commands#service-mysql)
+
