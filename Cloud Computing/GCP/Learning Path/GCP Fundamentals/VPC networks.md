@@ -1,0 +1,3 @@
+A Virtual Private Cloud network is a virtual version of a traditional and physical network. The VPC provides connectivity to VM instances, connects to on-premises networks by using Cloud VPN tunnels and VLAN attachments and distributes the traffic from Google Cloud external load balancer to backends. 
+
+A project can contain multiple VPC networks unless you specify it with an organizational policy. 
