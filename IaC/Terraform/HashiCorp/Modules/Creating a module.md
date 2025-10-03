@@ -43,7 +43,7 @@ When installing a remote module, Terraform will download it into the `.terrafor
 
 ## Object Attributes
 
-Terraform modules let you organize and re-use Terraform configuration. They make your infrastructure deployments consistent and help your team adhere to your organization's best practices. Input variables let module users customize attributes of the module. You can define module attributes using strings, numbers, booleans, lists, maps, and objects.
+Terraform modules let you organize and re-use Terraform configuration. They make your infrastructure deployments consistent and help your team adhere to your organization's best practices. Input variables let module users customize attributes of the module. You can define module attributes using strings, numbers, Booleans, lists, maps, and objects.
 
 Object type attributes contain a fixed set of named values of different types. Using objects in your modules lets you group related attributes together, making it easier for users to understand how to use your module. You can make attributes within objects optional, which make it easier for you to ship new module versions without changing the variables that module users need to define.
 
