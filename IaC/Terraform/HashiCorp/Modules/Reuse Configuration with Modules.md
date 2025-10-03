@@ -45,7 +45,7 @@ For this lab, we can use any provider such as GCP, Azure, or AWS. In my case, I 
 
 I verified my configuration and tested several workarounds, including changing repositories and trying with both Azure and GCP, but the issue persisted. As a result, I switched to the **branch-based publishing workflow**, which worked successfully:
 
-![[Pasted image 20251002175227.png]]
+![[terraform-023.png]]
 
 
 ```Go
