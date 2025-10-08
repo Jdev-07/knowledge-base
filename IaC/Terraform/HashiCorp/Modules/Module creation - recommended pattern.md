@@ -147,3 +147,13 @@ Define and publicize a repeatable workflow that consuming teams should follow to
 - **Devolved security**: If each module is versioned in its own repository, repository RBAC can be used to manage who has write access, allowing relevant teams to manage related infrastructure (such as the network team owning write access on network modules).
 - **Fostering a code community**: The best practice for module development, given the above recommendations, is to allow pull requests on all module repositories for modules stored in the private module repository. This fosters a code community within the organization, keeps module content relevant and maximally flexible and helps maintain the registry's effectiveness in the long term.
 - **Policy enforcement**: With Sentinel, you can assign policy criteria to all Terraform plans before execution. This allows for enforcement such that only modules from the private Terraform registry can be used; this provides greater control over collaboration and adoption of company policy and/or regulatory requirements.
+
+
+# Creation and use no-code modules
+
+No-code provisioning in HCP Terraform allows organizations to provide developers with limited infrastructure knowledge a way to deploy infrastructure that meets standard and architectural requirements. It also makes it easier for Terraform configuration authors to deploy infrastructure that follows best practices, removing the dependency on infrastructure teams.
+
+The main difference between no-code modules and ordinary modules is that the no-code workflow **requires** declaring provider configuration within the module itself. Authors of standard modules usually avoid including the provider configuration within the module because it makes the module incompatible with the `for_each`, `count`, and `depends_on` meta-arguments. Since users will not reference no-code modules in written configuration, there is no risk of this conflict.
+
+When users provision infrastructure with a no-code module, HCP Terraform will automatically launch a new workspace to manage the module's resources. Because no-code modules contain their provider configuration, organization administrators must also enable automatic access to provider credentials. You will review options for configuring credential access later in this tutorial.
+
