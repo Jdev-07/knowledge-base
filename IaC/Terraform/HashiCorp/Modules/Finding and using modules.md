@@ -129,3 +129,4 @@ terraform plan -replace=module.example.aws_instance.example
 The above selects a `resource "aws_instance" "example"` declared inside a `module "example"` child module declared inside your root module.
 
 Because replacing is a very disruptive action, Terraform only allows selecting individual resource instances. There is no syntax to force replacing _all_ resource instances belonging to a particular module.
+
