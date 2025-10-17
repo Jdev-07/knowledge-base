@@ -1,4 +1,5 @@
 
+# Inputs
 ## Input variables
 
 Input variables let you customize module aspects without editing the module itself. This makes the modules composable and reusable. 
@@ -345,3 +346,194 @@ Terraform loads variables in the following order, with later sources taking prec
 - The `terraform.tfvars.json` file, if present.
 - Any `*.auto.tfvars` or `*.auto.tfvars.json` files, processed in lexical order of their filenames.
 - Any `-var` and `-var-file` options on the command line, in the order they are provided. (This includes variables set by a Terraform Cloud workspace.)
+
+## Customize Terraform configuration with variables
+
+Unlike variables found in programming languages, Terraform's input variables don't change values during a Terraform run such as plan, apply, or destroy. Instead, they allow users to more safely customize their infrastructure by assigning different values to the variables before execution begins, rather than editing configuration files manually.
+
+In this tutorial, I used Terraform to deploy a web application on AWS. The supporting infrastructure includes a VPC, load balancer, and EC2 instances. I parameterized this configuration with Terraform input variables.
+
+![[terraform-24.png]]
+
+Repository I cloned: [Terraform variables](https://github.com/hashicorp-education/learn-terraform-variables)
+
+After cloning the repo, I initialized the configuration:
+
+```Shell
+terraform init
+```
+
+
+Then I applied the configuration
+
+```Shell
+terraform apply
+```
+
+Once the terraform run has been completed, I got the following
+
+```Log
+Apply complete! Resources: 43 added, 0 changed, 0 destroyed.
+
+Outputs:
+```
+
+
+**Parameterize the configuration**
+
+Variable declarations can appear anywhere in your configuration files. However, we recommend putting them into a separate file called `variables.tf` to make it easier for users to understand how they can customize the configuration.
+
+To parameterize an argument with an input variable, you must first define the variable, then replace the hardcoded value with a reference to that variable in your configuration.
+
+```Go
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+  default     = "us-west-2"
+}
+```
+
+
+Variable blocks have three optional arguments.
+
+- **Description**: A short description to document the purpose of the variable.
+- **Type**: The type of data contained in the variable.
+- **Default**: The default value.
+
+It is recommended to setting the description and type for all variables, and the default when necessary.
+
+Terraform does not support unassigned variables, therefore you make sure assign all values before terraform can apply the configuration.
+
+Variable values must be literal, and cannot use cannot use computed values like resource attributes, expressions, or other variables.
+
+**Complex-typed values**
+
+The variables you have used so far have all been single values. Terraform calls these types of variables _simple_. Terraform also supports _collection_ variable types that contain more than one value. Terraform supports several collection variable types.
+
+- **List:** A sequence of values of the same type.
+- **Map:** A lookup table, matching keys to values, all of the same type.
+- **Set:** An unordered collection of unique values, all of the same type.
+
+A good scenario to use list variables is when setting the `private_subnets` and `public_subnets` arguments for the VPC. Make this configuration easier to use and customizable by using lists and the `slice()` function.
+
+Example
+
+```Go
+variable "public_subnet_count" {
+  description = "Number of public subnets."
+  type        = number
+  default     = 2
+}
+
+variable "private_subnet_count" {
+  description = "Number of private subnets."
+  type        = number
+  default     = 2
+}
+
+variable "public_subnet_cidr_blocks" {
+  description = "Available cidr blocks for public subnets."
+  type        = list(string)
+  default     = [
+    "10.0.1.0/24",
+    "10.0.2.0/24",
+    "10.0.3.0/24",
+    "10.0.4.0/24",
+    "10.0.5.0/24",
+    "10.0.6.0/24",
+    "10.0.7.0/24",
+    "10.0.8.0/24",
+  ]
+}
+
+variable "private_subnet_cidr_blocks" {
+  description = "Available cidr blocks for private subnets."
+  type        = list(string)
+  default     = [
+    "10.0.101.0/24",
+    "10.0.102.0/24",
+    "10.0.103.0/24",
+    "10.0.104.0/24",
+    "10.0.105.0/24",
+    "10.0.106.0/24",
+    "10.0.107.0/24",
+    "10.0.108.0/24",
+  ]
+}
+```
+
+Each element in these lists must be a string. List elements must all be the same type, but can be any type, including complex types like `list(list)` and `list(map)`.
+
+Like lists and arrays used in most programming languages, you can refer to individual items in a list by index, starting with 0. Terraform also includes several functions that allow you to manipulate lists and other variable types.
+
+Use the [`slice()`](https://developer.hashicorp.com/terraform/language/functions/slice) function to get a subset of these lists.
+
+The Terraform `console` command opens an interactive console that you can use to evaluate expressions in the context of your configuration. This can be very useful when working with and troubleshooting variable definitions.
+
+```Log
+PS C:\Users\jony2\Desktop\Hands-on-Labs\Terraform\learn-terraform-variables> terraform console
+> var.private_subnet_cidr_blocks
+tolist([
+  "10.0.101.0/24",
+  "10.0.102.0/24",
+  "10.0.103.0/24",
+  "10.0.104.0/24",
+  "10.0.105.0/24",
+  "10.0.106.0/24",
+  "10.0.107.0/24",
+  "10.0.108.0/24",
+])
+> var.private_subnet_cidr_blocks[1]
+"10.0.102.0/24"
+> slice(var.private_subnet_cidr_blocks, 0, 3)
+tolist([
+  "10.0.101.0/24",
+  "10.0.102.0/24",
+  "10.0.103.0/24",
+])
+> exit
+```
+
+
+Terraform also supports two _structural_ types. Structural types have a fixed number of values that can be of different types.
+
+- **Tuple:** A fixed-length sequence of values of specified types.
+- **Object:** A lookup table, matching a fixed set of keys to values of specified types.
+
+**Interpolate variables in string**
+
+Terraform configuration supports string interpolation — inserting the output of an expression into a string. This allows you to use variables, local values, and the output of functions to create strings in your configuration.
+
+Update the names of the security groups to use the project and environment values from the `resource_tags` map.
+
+**Validate Variables**
+
+AWS load balancers have [naming restrictions](https://docs.aws.amazon.com/elasticloadbalancing/2012-06-01/APIReference/API_CreateLoadBalancer.html). Load balancer names must be no more than 32 characters long, and can only contain a limited set of characters.
+
+Now, use variable validation to restrict the possible values for the project and environment tags.
+
+Replace your existing `resource tags` variable in `variables.tf` with the below code snippet, which includes validation blocks to enforce character limits and character sets on both `project` and `environment` values.
+
+```Go
+variable "resource_tags" {
+  description = "Tags to set for all resources"
+  type        = map(string)
+  default     = {
+    project     = "my-project",
+    environment = "dev"
+  }
+
+  validation {
+    condition     = length(var.resource_tags["project"]) <= 16 && length(regexall("[^a-zA-Z0-9-]", var.resource_tags["project"])) == 0
+    error_message = "The project tag must be no more than 16 characters, and only contain letters, numbers, and hyphens."
+  }
+
+  validation {
+    condition     = length(var.resource_tags["environment"]) <= 8 && length(regexall("[^a-zA-Z0-9-]", var.resource_tags["environment"])) == 0
+    error_message = "The environment tag must be no more than 8 characters, and only contain letters, numbers, and hyphens."
+  }
+}
+```
+
+
+This ensures that the length of the load balancer name does not exceed 32 characters, or contain invalid characters. Using variable validation can be a good way to catch configuration errors early.
