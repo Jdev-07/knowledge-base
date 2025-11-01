@@ -537,3 +537,65 @@ variable "resource_tags" {
 
 
 This ensures that the length of the load balancer name does not exceed 32 characters, or contain invalid characters. Using variable validation can be a good way to catch configuration errors early.
+
+# Output Values
+
+Outputs basically make information about the infrastructure available in the command line, and can expose information for other Terraform configuration to use. These output values are similar to return values in programming languages. 
+
+Output values have several uses: 
+
+- A child module can expose some of its attributes to a parent module
+- Print certain values in the CLI output after running `terraform apply`
+- Outputs configured in a remote state can be  access by other configuration via `terraform remote state` data source.
+
+Resource instances managed by Terraform each export attributes whose values can be used elsewhere in configuration. Output values are a way to expose some of that information to the user of your module.
+
+## Declaring an Output Value
+
+All output values must be declared using an `output` block as follows:
+
+```Go
+output "instance_ip_addr" {
+  value = aws_instance.server.private_ip
+}
+```
+
+The label `instance_ip_addr` is the name, which must be a valid ID. This name is displayed to the user. 
+
+The `value` argument takes an expression whose result is to be returned to the user. 
+
+Note: Outputs are only rendered when Terraform applies your plan. Running terraform plan will not render outputs.
+
+## Access Child Module Outputs
+
+In a parent module, outputs of child modules are available in expressions as module `<MODULE NAME>.<OUTPUT NAME>` For example, if a child module named `web_server` declared an output named `instance_ip_addr`, you could access that value as `module.web_server.instance_ip_addr`.
+
+## Optional Arguments
+
+`output` blocks can optionally include `description`, `sensitive`, and `depends_on` arguments, which are described in the following sections.
+
+### `description` - Output Value Documentation
+
+The description of an `output` lets the user know what kind of value to expect. Providing a concise explanation makes the interface more user-friendly.
+
+The `description` should be written from the user’s perspective rather than the maintainer’s.
+
+```Go
+output "instance_ip_addr" {
+  value       = aws_instance.server.private_ip
+  description = "The private IP address of the main server instance."
+}
+```
+
+### `sensitive` - Suppressing Values in CLI Output
+
+An output can be marked as `sensitive` using the `sensitive` argument as follows:
+
+```GO
+output "db_password" {
+  value       = aws_db_instance.db.password
+  description = "The password for logging in to the database."
+  sensitive   = true
+}
+```
+
