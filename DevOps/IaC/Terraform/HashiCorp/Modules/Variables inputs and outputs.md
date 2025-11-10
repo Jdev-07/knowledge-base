@@ -599,3 +599,128 @@ output "db_password" {
 }
 ```
 
+Terraform hides the values marked as sensitive in the output of `terraform plan` and `terraform apply`. Example
+
+```Go
+# main.tf
+
+module "foo" {
+  source = "./mod"
+}
+
+resource "test_instance" "x" {
+  some_attribute = module.foo.a # resource attribute references a sensitive output
+}
+
+output "out" {
+  value     = "xyz"
+  sensitive = true
+}
+
+# mod/main.tf, our module containing a sensitive output
+
+output "a" {
+  value     = "secret"
+  sensitive = true
+}
+
+```
+
+The output should look like this:
+
+```Output
+Terraform will perform the following actions:
+
+  # test_instance.x will be created
+  + resource "test_instance" "x" {
+      + some_attribute    = (sensitive)
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + out = (sensitive value)
+```
+
+Terraform will still record sensitive values in the [state](https://developer.hashicorp.com/terraform/language/v1.1.x/state), and so anyone who can access the state data will have access to the sensitive values in cleartext.
+
+### `depends_on` - Explicit Output Dependencies 
+
+Usually, dependencies and relationships with other nodes are not something you need to worry about, because output values are meant to expose data from a module. However, if a parent module accesses an output value exported by one of its child modules, those dependencies become very important.
+
+Terraform analyzes the `value` expression for an output value and automatically  determines a set of dependencies, but in less-common cases there are dependencies that cannot be recognized  implicitly. For these cases we must use the `depends_on` argument.
+
+```Go
+output "instance_ip_addr" {
+  value       = aws_instance.server.private_ip
+  description = "The private IP address of the main server instance."
+
+  depends_on = [
+    # Security group rule must be created before this IP address could
+    # actually be used, otherwise the services will be unreachable.
+    aws_security_group_rule.local_access,
+  ]
+}
+
+```
+
+The `depends_on` argument should be used only as a last resort, When using it, always include a comment explaining why it is being used, to help future maintainers. 
+
+## Output data from Terraform
+
+Lab, [Outputs](https://developer.hashicorp.com/terraform/tutorials/configuration-language/outputs)
+
+Terraform outputs value let you export structured data about your resources. You can use this data to configure other parts of your infrastructure  with automation tools, or as a data source for another terraform workspace. 
+
+For this lab I have cloned this repos:  [Learning Output Values](https://github.com/hashicorp-education/learn-terraform-outputs)
+
+```Shell
+git clone https://github.com/hashicorp-education/learn-terraform-outputs
+```
+
+Once we have added outputs, we can query them using the `terraform output` command.
+
+In this terraform configuration we added the following:
+
+```Go
+output "vpc_id" {
+  description = "ID of project VPC"
+  value       = module.vpc.vpc_id
+}
+
+output "lb_url" {
+  description = "URL of load balancer"
+  value       = "http://${module.elb_http.elb_dns_name}/"
+}
+
+output "web_server_count" {
+  description = "Number of web servers provisioned"
+  value       = length(module.ec2_instances.instance_ids)
+}
+```
+
+If I run the command, I get the following:
+
+```Log
+PS C:\Users\jony2\Desktop\Hands-on-Labs\Terraform\learn-terraform-outputs> terraform output
+lb_url = "http://lb-fPA-project-alpha-dev-88483529.us-east-1.elb.amazonaws.com/"
+vpc_id = "vpc-0d8c65ee1b5b709b4"
+web_server_count = 4
+```
+
+Query using the output name
+
+```Log
+PS C:\Users\jony2\Desktop\Hands-on-Labs\Terraform\learn-terraform-outputs> terraform output lb_url
+"http://lb-fPA-project-alpha-dev-88483529.us-east-1.elb.amazonaws.com/"
+```
+
+
+For a machine-readable output we can use the following command:
+
+```Shell
+terraform output -json
+```
+
+It is very important having into account that flagging output as sensitive, hides the information from `terraform plan`, `terraform apply` and `terraform destroy`, but the content is always stored as plain text in the terraform state file.
+
