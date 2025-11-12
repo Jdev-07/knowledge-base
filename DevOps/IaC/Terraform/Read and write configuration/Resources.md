@@ -8,3 +8,5 @@ The meta-arguments sections documents special arguments that can be used with ev
 
 Provisioners documents configuring post-creation actions for a resource using the `provisioner` and `connection` blocks.
 
+## Resource Blocks
+
