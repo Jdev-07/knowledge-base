@@ -1,4 +1,3 @@
-
 ## Overview
 
 All resources except the highest (organization) resource in a hierarchy  have one parent. At the lowest level are located the service resources that make up all Google Cloud Services and all of these resources have project resources as their parent. 

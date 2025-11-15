@@ -376,3 +376,80 @@ resource "aws_instance" "server" {
   # (and the other arguments as above)
 }
 ```
+
+### `providers`
+
+This meta-argument basically  specifies which provider configuration to use for the resource. Its value should be an unquoted `<PROVIDER>.<ALIAS>`  reference. You can optionally create multiple configuration for a single provider (usually to manage resources in different regions). Each provide can have a default configuration and any number of alternate configurations.
+
+Terraform interprets the initial word in the resource type name, separated by underscores, as the local name of a provider, and uses that provider's default configuration. But setting alternate configurations allow selecting alternate configuration. 
+
+```Go
+# default configuration
+provider "google" {
+  region = "us-central1"
+}
+
+# alternate configuration, whose alias is "europe"
+provider "google" {
+  alias  = "europe"
+  region = "europe-west1"
+}
+
+resource "google_compute_instance" "example" {
+  # This "provider" meta-argument selects the google provider
+  # configuration whose alias is "europe", rather than the
+  # default configuration.
+  provider = google.europe
+
+  # ...
+}
+```
+
+A resource always has an implicit dependency on its associated provider, to ensure that the provider is fully configured before any resource actions are taken.
+
+### The lifecycle Meta-Argument
+
+```Go
+resource "azurerm_resource_group" "example" {
+  # ...
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+```
+
+The **`lifecycle` block** is a meta-argument available for any resource. It controls how Terraform creates, updates, or destroys resources. It supports three main options:
+
+
+#### 1. `create_before_destroy` (bool)
+
+- Normally, Terraform **destroys** a resource first and then **creates** a replacement if it cannot be updated in place.
+    
+- Setting `create_before_destroy = true` reverses this: Terraform **creates the new resource first**, then destroys the old one.
+    
+- Use carefully—some resources cannot exist twice due to naming or API constraints.
+    
+- **Destroy provisioners do NOT run** when this is enabled.
+
+#### 2. `prevent_destroy` (bool)
+
+- When set to `true`, Terraform **blocks any plan** that would destroy the resource.
+    
+- Useful for critical or expensive resources (e.g., databases).
+    
+- But it also prevents `terraform destroy` from working for that resource.
+    
+- If the resource block is removed from the configuration, the protection is removed too.
+
+#### 3. `ignore_changes` (list of attribute names)
+
+- Terraform normally updates a resource when the real-world state drifts.
+    
+- `ignore_changes` tells Terraform to **ignore specific attributes** during update planning.
+    
+- Good when:
+    
+    - External systems modify certain fields (e.g., tags managed by another agent).
+        
+    - Some inputs may change after creation but should not trigger updates.
