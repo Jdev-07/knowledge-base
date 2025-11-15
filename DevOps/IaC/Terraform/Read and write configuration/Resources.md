@@ -1,3 +1,5 @@
+# Overview
+
 Resources are the most important element in the Terraform language. Each resource block describes one or more infrastructure objects, such as virtual networks, compute instances or higher-level components such as DNS records.   
 
 [Resources blocks]() documents the syntax for declaring resources
@@ -453,3 +455,7 @@ The **`lifecycle` block** is a meta-argument available for any resource. It cont
     - External systems modify certain fields (e.g., tags managed by another agent).
         
     - Some inputs may change after creation but should not trigger updates.
+
+
+## Resource addressing
+
