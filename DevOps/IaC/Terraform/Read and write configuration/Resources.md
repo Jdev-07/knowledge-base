@@ -459,3 +459,95 @@ The **`lifecycle` block** is a meta-argument available for any resource. It cont
 
 ## Resource addressing
 
+A *resource address* is string that identifies zero or more resource instances in your overall configuration.  An address is made up of two parts:
+
+```
+[module path][resource spec]
+```
+
+In some context Terraform might allow for an incomplete resource address that only refers to a module as a whole, or that omits the index for a multi-instance resource. But, it will depend on context.
+
+### Module Path
+
+A module path addresses a module within the tree of modules. It takes the form:
+
+```
+module.module_name[module index]
+```
+
+- `module`: Module keyword, indicating a child module (non-root), Multiple `module` keywords on a path indicate nesting.
+- `module_name`: user-defined name of the module
+- `[module_index]`: (optional) index to select an instance from a module call that has multiple instance. 
+
+An address without a resource spec, i.e. `module.foo` applies to every resource within the module if a single module, or all instances of a module if a module has multiple instances. To address all resources of a particular module instance, include the module index in the address, such as `module.foo["a"]`
+
+If the module path is omitted, the address applies to the root module. 
+
+An example of the `module` keyword delineating between two modules that have multiple instances:
+
+```Go
+module.foo[0].module.bar["a"]
+```
+
+### Resource spec
+
+A resource spec addresses a specific resource instance in the selected module. It has the following syntax:
+
+```Go
+resource_type.resource_name[instance index]
+```
+
+- `resource_type`: Type of the resource being addressed 
+- `resource_name`: User-defined name of the resource
+- `[instance_index]`: (optional) Index to select an instance from a resource that has multiple instances, surrounded by square brackets characters.
+### Index values for Modules and Resource
+
+The following specifications apply to index values on modules and resources with multiple instances:
+
+- `[N]` where `N` is a `0`-based numerical index into a resource with multiple instances specified by the `count` meta-argument. Omitting an index when addressing a resource where `count > 1` means that the address references all instances.
+- `[INDEX]` where `INDEX` is a alphanumerical key index into a resource with multiple instances specified by the `for_each` meta-argument.
+
+### Examples
+
+**`count` Example**
+
+```Go
+resource "aws_instance" "web" {
+  # ...
+  count = 4
+}
+```
+
+An address like this:
+
+```Go
+aws_instance.web[3]
+```
+
+Refers to only the last instance in the config, and an address like this:
+
+```Go
+aws_instance.web
+```
+
+
+**`for_each` Example**
+
+```Go
+resource "aws_instance" "web" {
+  # ...
+  for_each = {
+    "terraform": "value1",
+    "resource":  "value2",
+    "indexing":  "value3",
+    "example":   "value4",
+  }
+}
+```
+
+An address like this:
+
+```Go
+aws_instance.web["example"]
+```
+
