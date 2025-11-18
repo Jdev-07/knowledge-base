@@ -92,3 +92,127 @@ resource "aws_instance" "web" {
 ### Data Source Lifecycle
 
 If a data instance uses only known arguments, Terraform reads it during the refresh phase so the plan can show the real values. If the arguments depend on computed values, Terraform waits until the apply phase to read it, and the plan will show those values as computed.
+
+## Query data sources
+
+Terraform data sources let you dynamically fetch data from APIs or other Terraform state backends.
+
+[Querying Data Sources - Lab](https://developer.hashicorp.com/terraform/tutorials/configuration-language/data-sources)
+
+For this lab, I cloned the [VPC repository - data sources](https://github.com/hashicorp-education/learn-terraform-data-sources-vpc) for deploying a VPC network and security groups for an application consisting of a load balancer and a EC2 instance [App Repos](https://github.com/hashicorp-education/learn-terraform-data-sources-app).
+
+
+```Shell
+git clone https://github.com/hashicorp-education/learn-terraform-data-sources-vpc
+```
+
+Application:
+
+
+```Shell
+git clone https://github.com/hashicorp-education/learn-terraform-data-sources-app
+```
+
+Then, we initialized the VPC workspace. The first thing is to set the `TF_CLOUD_ORGANIZATION` env variable to our HCP Terraform organization name.
+
+```Shell
+$ export TF_CLOUD_ORGANIZATION=example-org
+```
+
+Workspace:
+
+```Bash
+$ export TF_WORKSPACE=workspace-aws
+```
+
+### Updating VPC `region`
+
+The VPC configuration uses a variable called `aws_region` with a default value of `us-east-1` to set the region. However, manipulating this variable will not take any effect over the VPC network because the VPC conf includes `azs` with a hard-coded list of availability  zones. 
+
+```Go
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "3.14.0"
+
+  cidr = var.vpc_cidr_block
+
+  azs             = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e"]
+  private_subnets = slice(var.private_subnet_cidr_blocks, 0, 2)
+  public_subnets  = slice(var.public_subnet_cidr_blocks, 0, 2)
+
+  enable_nat_gateway = true
+  enable_vpn_gateway = false
+
+  map_public_ip_on_launch = false
+}
+```
+
+Then, we refactored this using a data source:
+
+```Go
+data "aws_availability_zones" "available" {
+  state = "available"
+
+  filter {
+    name   = "zone-type"
+    values = ["availability-zone"]
+  }
+}
+```
+
+The `aws_availability_zones` is a data source offered by AWS provider, which lets us to retrieve a list of availability zones. Also, we are using an argument `state` to limit the `azs`. We can refer to data source attributes using `data.<NAME>.<ATTRIUBUTE>`
+
+```Go
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "3.14.0"
+
+  cidr = var.vpc_cidr_block
+
+  azs             = data.aws_availability_zones.available.names
+  private_subnets = slice(var.private_subnet_cidr_blocks, 0, 2)
+  public_subnets  = slice(var.public_subnet_cidr_blocks, 0, 2)
+
+  enable_nat_gateway = true
+  enable_vpn_gateway = false
+
+  map_public_ip_on_launch = false
+}
+```
+
+Then we configure to output the region:
+
+```Go
+data "aws_region" "current" { }
+```
+
+Outputs.tf:
+
+```Go
+output "aws_region" {
+  description = "AWS region"
+  value       = data.aws_region.current.name
+}
+```
+
+Then create the infrastructure.
+
+### Configure remote state
+
+Like the VPC workspace, this configuration includes hard-coded values for the `us-east-1` region. Then, we configure the `terraform_remote_state` data source to use another workspace's output data.
+
+```Go
+data "terraform_remote_state" "vpc" {
+  backend = "remote"
+
+  config = {
+    organization = "YOUR_ORG"
+    workspaces = {
+
+      name         = "learn-terraform-data-sources-vpc"
+    }
+  }
+}
+```
+
+This remote state uses the remote backend to load state data from the workspace and organization in the config section.

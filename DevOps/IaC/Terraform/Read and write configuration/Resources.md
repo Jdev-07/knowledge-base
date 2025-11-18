@@ -551,3 +551,119 @@ An address like this:
 aws_instance.web["example"]
 ```
 
+## Resource Dependency Lab
+
+There are two type of dependencies: Implicit and explicit dependencies.
+
+**Manage implicit dependencies**
+
+The most common dependencies are the implicit dependencies between two resources or modules.
+
+```Go
+provider "aws" {
+  region = var.aws_region
+}
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+}
+
+resource "aws_instance" "example_a" {
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+}
+
+resource "aws_instance" "example_b" {
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+}
+
+resource "aws_eip" "ip" {
+  vpc      = true
+  instance = aws_instance.example_a.id
+}
+```
+
+The `aws_eip` resource type allocates and associates an [Elastic IP](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip.html) to an EC2 instance. Since the instance must exist before the Elastic IP can be created and attached, Terraform must ensure that `aws_instance.example_a` is created before it creates `aws_eip.ip`. Meanwhile, `aws_instance.example_b` can be created in parallel to the other resources.
+
+Output:
+
+```Output
+aws_instance.example_a: Creating...
+aws_instance.example_b: Creating...
+aws_instance.example_b: Still creating... [10s elapsed]
+aws_instance.example_a: Still creating... [10s elapsed]
+aws_instance.example_a: Still creating... [20s elapsed]
+aws_instance.example_b: Still creating... [20s elapsed]
+aws_instance.example_b: Creation complete after 22s [id=i-0bb951c3a458fa9c6]
+aws_instance.example_a: Creation complete after 22s [id=i-0ff78d577827316d8]
+aws_eip.ip: Creating...
+aws_eip.ip: Creation complete after 1s [id=eipalloc-0271a8a7c55c61e88]
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+```
+
+
+As shown above, Terraform waited until the creation of EC2 instance `example_a` was complete before creating the Elastic IP address.
+
+Terraform automatically infers when one resource depends on another by studying the resource attributes used in interpolation expressions. In the example above, the reference to `aws_instance.example_a.id` in the definition of the `aws_eip.ip` block creates an _implicit dependency_.
+
+Terraform uses this dependency information to determine the correct order in which to create the different resources. To do so, it creates a dependency graph of all of the resources defined by the configuration. In the example above, Terraform knows that the EC2 Instance must be created before the Elastic IP.
+
+**Manage explicit dependencies**
+
+Terraform automatically builds **implicit dependencies** by analyzing resource references (e.g., using `aws_s3_bucket.example.id` inside another resource). These references tell Terraform the correct creation order.
+
+However, some dependencies are **not visible to Terraform**, for example, when an EC2 application depends on an S3 bucket but the Terraform config doesn’t reference the bucket directly. In these cases, Terraform can't infer the relationship.
+
+To handle this, you use **`depends_on`**, which lets you manually declare one or more resources that must be created first. Terraform will wait for all resources listed in `depends_on` before creating the target resource.
+
+Adding this to the `main.tf`
+
+```Go
+resource "aws_s3_bucket" "example" { }
+
+resource "aws_instance" "example_c" {
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+
+  depends_on = [aws_s3_bucket.example]
+}
+
+module "example_sqs_queue" {
+  source  = "terraform-aws-modules/sqs/aws"
+  version = "3.3.0"
+
+  depends_on = [aws_s3_bucket.example, aws_instance.example_c]
+}
+```
+
+The order in which resources are declared in your configuration files has no effect on the order in which Terraform creates or destroys them.
+
+```Output
+
+aws_s3_bucket.example: Creating...
+aws_s3_bucket.example: Creation complete after 2s [id=terraform-20251118013624306400000001]
+aws_instance.example_c: Creating...
+aws_instance.example_c: Still creating... [10s elapsed]
+aws_instance.example_c: Still creating... [20s elapsed]
+aws_instance.example_c: Creation complete after 22s [id=i-0b4e600eba40e6026]
+module.example_sqs_queue.aws_sqs_queue.this[0]: Creating...
+module.example_sqs_queue.aws_sqs_queue.this[0]: Still creating... [10s elapsed]
+module.example_sqs_queue.aws_sqs_queue.this[0]: Still creating... [20s elapsed]
+module.example_sqs_queue.aws_sqs_queue.this[0]: Creation complete after 26s [id=https://sqs.us-west-1.amazonaws.com/646217540187/terraform-20251118013648233400000003]
+module.example_sqs_queue.data.aws_arn.this[0]: Refreshing...
+module.example_sqs_queue.data.aws_arn.this[0]: Refresh complete after 0s [id=arn:aws:sqs:us-west-1:646217540187:terraform-20251118013648233400000003]
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+```
+
+Since both the instance and the SQS Queue are dependent upon the S3 Bucket, Terraform waits until the bucket is created to begin creating the other two resources.
+
