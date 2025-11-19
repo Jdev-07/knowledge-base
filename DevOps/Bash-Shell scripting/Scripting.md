@@ -134,7 +134,71 @@ The sum of the numbers is 24
 ```
 
 
+## Bash Data Types
+
+Although the variables have `un-typed`, there are some data type available in bash.
+
+### `string`
+
+Strings are sequences of characters used to store text. They can manipulated for operations such concatenation and sub-string extraction.  
+
+Concatenation:
+
+```Bash
+#!/bin/bash
+greetings="Hey there pal!"
+name="Randy, Right?"
+fullText="$greetings$name"
+echo "$fullText"
+```
+
+Sub-strings extraction:
+
+```Bash
+#!/bin/bash
+file="backup.tar.gz"
+echo "${file#backup.}"
+```
+
+### `numbers`
+
+Numbers in bash can be used for arithmetic operations.
+
+```Bash
+#!/bin/bash
+num01=15
+num02=25
+sum=$((num01 + num02))
+difference=$((num02 - num01))
+product=$((num01 * num02))
+quotient=$((num02 / num01))
+echo "Sum: $sum, Difference: $difference, Product: $product, Quotient: $quotient"
+```
 
 
+### `arrays`
 
+Arrays are used to store multiple values in a single variable.Each element in an array is accessed using an index. You can iterate over arrays and modify elements.
 
+```Bash
+#!/bin/bash
+fruits=("apple" "Banana" "Cherry")
+for fruit in "${fruits[@]}"; do
+	echo $fruit
+done
+```
+
+### Associative `arrays`
+
+Associative arrays allow you to use named keys to access values. They are similar to dictionaries in other programming languages. You can add or remove keys and values.
+
+```Shell
+#!/bin/bash
+declare -A colors
+colors[apple]="red"
+colors[grape]="purple"
+colors[banana]="yellow"
+unset colors[banana]
+echo "${colors[apple]}"
+echo "${colors[grape]}"
+```
