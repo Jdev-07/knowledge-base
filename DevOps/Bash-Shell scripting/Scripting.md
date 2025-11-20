@@ -309,3 +309,130 @@ if [ $num -gt 0 ]; then
 	fi
 fi
 ```
+
+## Bash Loops
+
+There are some loops available in bash: `for`, `while`, `until`, and `break` and `done`
+
+### `for` loops
+
+`for` loops allow you to iterate over a list of items or a range of numbers. They are useful for repeating tasks a specific number of times. 
+
+The `for` keyword is followed by a variable name, a range of values, and a `do` keyword, which marks the start of the loop block.
+
+Example: 
+
+```Bash
+#!/bin/bash
+for i in {1..5}; do
+	echo "Iteration $i"
+done
+```
+
+### `while` loops
+
+`while` loops execute a block of code as long as a specified condition is true. They are useful for tasks that need to repeat until certain changes. The condition is enclosed in square brackets `[]` and the loops ends with `done`
+
+```Bash
+#!/bin/bash
+count=1
+while [ $count -le 5 ]; do
+	echo "Count is $count"
+	((count++))
+done
+```
+
+### `until` loops
+
+Until loops are similar to while loops, but they execute until a specified condition becomes true.
+
+The condition is enclosed in square brackets `[ ]`, and the loop ends with `done`.
+
+```Bash
+#!/bin/bash
+count=1
+until [ $count -gt 5 ]; do
+	echo "Count is $count"
+	((count++))
+done
+```
+
+### `break` and `continue`
+
+`break` and `continue` are expressions used to control loop execution. `break` exits the loop, while `continue` skips the next iteration. 
+
+These statements are typically used inside conditional blocks to alter the flow of the loop.
+
+```Bash
+#!/bin/bash
+for i in {1..5}; do
+	if [ $i -eq 3 ]; then
+		continue
+	fi
+	echo "Number $i"
+	if [ $i -eq 4 ]; then
+		break
+	fi
+done
+```
+
+### `nested` loops
+
+Nested loops allow you to place one loop inside another, enabling more complex iteration patterns.
+
+Each loop must be closed with its own done.
+
+```Bash
+#!/bin/bash
+for i in {1..3}; do
+        for j in {1..2};do
+                echo "Outer loop $i, Inner loop $j"
+        done
+done
+```
+
+## Bash Functions
+
+### Defining `functions`
+
+To define a function in Bash, use the following syntax:
+
+```Bash
+myFunc(){
+		echo "Hello, world!"
+}
+```
+
+### Calling `functions`
+
+In Bash, execute (or call) a functions by using its name.
+
+```Bash
+myFunc
+```
+
+### Advanced `function` features
+
+Functions can accept arguments, return values, and use local variables. Here's an example of a function that takes an argument and uses a local variable:
+
+```Bash
+#!/bin/bash
+greet(){
+	local name=$1
+	echo "Hello, $name!"
+}
+greet "Mariano"
+
+```
+
+Example:
+
+```Bash
+#!/bin/bash
+add(){
+	local sum=$(($1 + $2))
+	echo $sum
+}
+result=$(add 5 3)
+echo "The sum is $result"
+```
