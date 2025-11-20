@@ -436,3 +436,82 @@ add(){
 result=$(add 5 3)
 echo "The sum is $result"
 ```
+
+## `arrays`
+
+Arrays allow you to store multiple values in a single variable, making data management easier. 
+
+### Creating `arrays`
+
+To create an array in Bash, use the following syntax.
+
+Arrays can store multiple values, and each value is indexed starting from zero:
+
+```Bash
+my_array=("value1" "value2" "value3")
+```
+
+### Accessing `array` elements
+
+To access elements in a Bash array, use the index of the element.
+
+The index is specified in square brackets:
+
+```Bash
+echo ${my_array[0]}
+```
+
+### Modifying `array` elements
+
+You can modify elements in a Bash array by specifying the index and assigning a new value:
+
+```bash
+my_array[1]="new_value"
+```
+
+## Bash `crontab` command - Schedule Tasks
+
+
+### Understanding `cron` and `crontab`
+
+The `cron` system is a time-based job scheduler in Unix-like operating systems. It automates the execution of tasks (known as `cron jobs`) at specified intervals.
+
+While `cron` is background service that runs these tasks, `crontab` is the command used to manage them. There is no `cron` command; instead, you use `crontab` to set up and control `cron` jobs
+
+### Using `crontab`
+
+`crontab` command allows you to define scheduled tasks. These tasks are specified in a `crontab` file, which is a simple text file containing a list of commands meant to be run at specified times.
+
+#### `crontab` syntax
+
+The basic syntax of the `crontab` command is:
+
+`crontab` `options`
+
+Options:
+
+- `-e`: Edit the `crontab` file for the current user.
+- `-l`: List the `crontab` entries for the current user.
+- `-r`: Remove the `crontab` file for the current user.
+
+#### Setting up `cron` jobs
+
+`Cron` jobs are defined using a specific syntax in the `crontab` file. Each line in the file represents a task and follows this format:
+
+`* * * * *  command_to_execute`
+
+* Minute: 0 - 59
+* Hour: 0 -23
+* Day of Month: 1 - 31
+* Month: 1 - 12
+* Day of week: 0 - 7 (0 and 7 are sunday)
+
+Each asterisk can be replaced with a value or range to schedule the command at specific times.
+
+```Bash
+$ 0 0 * * * /path/to/script.sh
+```
+
+
+The entry will execute /path/to/script every day at 00:00 (Midnight)
+
