@@ -136,7 +136,7 @@ The sum of the numbers is 24
 
 ## Bash Data Types
 
-Although the variables have `un-typed`, there are some data type available in bash.
+Although the variables are `un-typed`, there are some data type available in bash.
 
 ### `string`
 
@@ -201,4 +201,111 @@ colors[banana]="yellow"
 unset colors[banana]
 echo "${colors[apple]}"
 echo "${colors[grape]}"
+```
+
+## Bash operators
+
+In bash there are many operators that are grouped by their functionality. 
+
+### Comparison `operators`
+
+- `-eq`: Equal to
+- `-ne`: No equal to
+- `-lt`: Less than
+- `-le`: Less than or equal to
+- `-qt`: Greater than
+- `-ge`: Greater than or equal to
+
+### String Comparison `operators`
+
+- `=`: Equal to
+- `!=`: Not equal to
+- `<`: Less than, in ASCII alphabetical order.
+- `>`: Greater than, in ASCII alphabetical order.
+
+### Arithmetic `operators`
+
+- `+`: Addition
+- `-`: Subtraction
+- `*`: Product
+- `/`: Division
+- `%`: Modulus (reminder of division)
+- For exponentiation, user external tools like `bc` or `awk`.
+
+### Logical  `operators`
+
+- `&&`: Logical AND
+- `||`: Logical OR
+- `!`: Logical NOT
+
+### File Test `operators`
+
+- `-e`: Checks if a file exists
+- `-d`: Checks if a directory exists
+- `-f`: Checks if a file is a regular file
+- `-s`: Checks if a file is not empty
+
+## Bash `if-else`
+
+For conditional statements we can use `if-else`
+
+### `if` statements
+
+"If statements" allow you to to execute a chunk of code based on a condition. If this condition is met, the block of code will run.
+
+Example:
+
+```Bash
+#!/bin/bash
+num=15
+if [ $num -gt 10 ]; then
+	echo "The number $num is greater than 10"
+fi
+```
+
+
+The condition is enclosed in square brackets `[ ]` and the statements ends with `fi`.
+
+### `if-else` statements
+
+The `if-else` statements provides  a way to execute one block if the condition is met, and another one if does not.
+
+```Bash
+#!/bin/bash
+num=5
+if [ $num -gt 10 ]; then
+	echo "The number $num is greater than 10"
+else
+	echo "The number $num is equal or less than"
+fi
+```
+
+### `elif` statements
+
+`elif` statements allow you to check multiple conditions in sequence. If the first condition is false, next one is checked. 
+
+```Bash
+#!/bin/bash
+num=10
+if [ $num -gt 10 ]; then
+	echo "The number $num is greater than 10"
+elif [ $num -eq 10 ]; then
+	echo "The number $num is equal to 10"
+else
+	echo "The number $num is less than 10"
+fi
+```
+
+### Nested `if` statements
+
+Nested if statements allow you to place an if statement inside another if statement, enabling more complex logic. 
+
+```Bash
+#!/bin/bash
+num=5
+if [ $num -gt 0 ]; then
+	if [ $num -lt 10 ]; then
+		echo "Number is between 1 and 9"
+	fi
+fi
 ```
