@@ -45,3 +45,18 @@ The `refresh=false` option is used in normal planning mode to skip the default b
 - **CLI:** Use `terraform plan -refresh=false` or `terraform apply -refresh=false`.
 - **API:** Use the `refresh` option.
 
+## Manage resource drift
+
+The terraform state is a record of all resources that Terraform manages and should not make any manual change.  If the terraform configuration and state do not match the real infrastructure, terraform will attempt to reconcile your infrastructure, which may unintentionally destroy o recreate resources. 
+
+`terraform state list` will display the resources managed by Terraform.
+
+By default, Terraform refreshes the state during `terraform plan` and `terraform apply` by comparing the state file with the real infrastructure and updating it in memory, ensuring Terraform plans the correct changes to resources.
+
+However, if you suspect that your infrastructure has changed outside of Terraform, you can use the `-refresh-only` flag to inspect what changes are needed to align your state file with the real infrastructure. This approach is safer than using the deprecated terraform refresh subcommand.
+
+The `-refresh-only` flag was introduced in Terraform 0.15.4, and is preferred over the `terraform refresh` subcommand.
+
+Terraform stores information about your infrastructure in a state file. This state file keeps track of resources created by your configuration and maps them to real-world resources.
+
+Terraform updates infrastructure only when it does not match the configuration. However, if you want to safely recreate a specific resource that is broken, without running terraform destroy and affecting all resources, you can use the `-replace` flag with terraform plan or terraform apply to force the resource to be recreated. In the past, the terraform taint command was used to achieve a similar result, but it is now deprecated.
